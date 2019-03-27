@@ -169,7 +169,35 @@ spatial_chart <- specify_base(chart_type = "choropleth", data = "shape_dat", col
 plot(spatial_chart)
 ```
 
-It's also possible to see an individual map from only one of the shape files.
+```{r choro_2,message=FALSE,warning=FALSE,fig.height=4,fig.width=4,units="in"}
+#metadata frome the shape files is incomplete
+#this is something you need to know and not something that the systems resolves for you
+#so, we'll work to clean up the metadata a bit more before 
+
+shape_meta<-shape_dat@data$metadata
+
+#a little wrangling to put things under the same
+#column header since they have slightly different names
+tmp<-shape_meta$admin1Name
+tmp[is.na(tmp)]<-as.character(shape_meta$admin1name[is.na(tmp)])
+shape_meta$admin1Name<-tmp
+
+#now add this with the sample data
+tab<-tab_dat@data[[1]] %>% group_by(location) %>% tally()
+tab<-left_join(shape_meta,tab,by=c("admin1Name"="location"))
+tab[is.na(tab$n),]$n<-0
+
+#visualize
+spatial_chart<-specify_base(chart_type="choropleth",
+                            data="shape_dat",
+                            metadata="tab",#has priority over metadata stored with spatial object
+                            color="admin0Name",
+                            alpha="n")
+plot(spatial_chart)
+```
+
+
+Also, it possible just to see one individual map too, not just everything together
 
 Here's an example where we compute some new data and specify and plot the "Guinea" region
 ```{r choro_2,message=FALSE,warning=FALSE,fig.height=4,fig.width=4,units="in"}
@@ -178,21 +206,16 @@ Here's an example where we compute some new data and specify and plot the "Guine
 # You can change the metadata
 gin_meta <- gin_shape_dat@data$metadata
 
-# Then join the metadata with the tabular data
-tab <- tab_dat@data[[1]] %>% 
-  group_by(location) %>% 
-  count()
-tab <- left_join(gin_meta, tab, by = c("admin1Name" = "location"))
+tab<-left_join(gin_meta,tab,by=c("admin1Name"="location"))
+tab[is.na(tab$n),]$n<-0
 
-# Now let's specify and plot a choropleth for the Guinea region
-spatial_chart <- specify_base(chart_type = "choropleth", data = "gin_shape_dat", metadata = "tab", color = "n")
+spatial_chart<-specify_base(chart_type="choropleth",data="gin_shape_dat",metadata = "tab",color="admin0Name",alpha="n")
 plot(spatial_chart)
 ```
 
 
-Second, is working with co-ordinates from a tabular data file.  
-The background raster image is supplied by the 'Openstreemaps' package (and the broader project). They do great work, consider supporting them if you like this feature too.
-# TODO: By supporting them, do you mean "using their package?"
+
+Second, is working from a co-ordinates from a tabular data file. The background raster image is supplied by the 'Openstreemaps' package (and the broader project). They do great work, consider supporting them if you like this feature too.
 
 ```{r map_charts,message=FALSE,warning=FALSE}
 # Geographic Map
