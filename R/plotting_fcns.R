@@ -96,7 +96,7 @@ plot_simple<-function(...){
          #colour charts types
          "heatmap" = do.call(render_heatmap,args = spec_list,envir = parent.frame()),
          "category stripe" = do.call(render_category_stripe,args = spec_list,envir = parent.frame()),
-         "density" = do.call(render_2D_density,args = spec_list,envir = parent.frame()),
+         "density" = do.call(render_1D_density,args = spec_list,envir = parent.frame()),
          #tree chart types
          "phylogenetic tree" = do.call(render_phylogenetic_tree,args = spec_list,envir = parent.frame()),
          "dendrogram" = do.call(render_dendrogram,args = spec_list,envir = parent.frame()),

@@ -51,9 +51,12 @@ plot(histogram_chart)
 pdf_chart<-specify_base(chart_type = "pdf",data="tab_dat",x = "latitude")
 plot(pdf_chart)
 
-#works but weird a bit
+
 boxplot_chart<-specify_base(chart_type = "boxplot",data="tab_dat",x = "country", y ="latitude")
 plot(boxplot_chart)
+
+beeswarm_chart<-specify_base(chart_type = "swarmplot",data="tab_dat",x = "country", y ="latitude")
+plot(beeswarm_chart)
 
 #we'll even let you make a pie chart
 pie_chart<-specify_base(chart_type = "pie",data="tab_dat",x = "country")
@@ -63,7 +66,7 @@ plot(pie_chart)
 
 gevitR can also work with data frames too, so you can perform some analyses and go ahead and plot the data. Here's an example using a line chart :
 
-```{r common_stats_two, message=FALSE,warning=FALSE,fig.height=2,fig.width=2,units="in"}
+```{r common_stats_two, message=FALSE,warning=FALSE,fig.height=2,fig.width=3,units="in"}
 
 #lets use our tabular data
 ebov<-tab_dat@data[[1]] #make this nicer
@@ -93,7 +96,7 @@ plot(heatmap_chart)
 
 ```
 
-```{r}
+```{r D2_density_charts,message=FALSE,warning=FALSE,fig.height=2,fig.width=2,units="in"}
 density_chart<-specify_base(chart_type = "density",data="tab_dat",x = "latitude",y="longitude")
 plot(density_chart)
 ```
@@ -104,7 +107,7 @@ But it's possible to generate a category stripe on its own.
 ```{r color_charts_two,message=FALSE,warning=FALSE,fig.height=2,fig.width=2,units="in",eval=FALSE}
 #this doesn't quite work when there are a lot of labels
 #maybe the answer here is just a 1D tile plot..
-cat_stripe_chart<-specify_base(chart_type = "category stripe",data="tab_dat",x = "site.id",y="bob",category="country")
+cat_stripe_chart<-specify_base(chart_type = "heatmap",data="tab_dat",y = "site.id",color="bob",category="country")
 plot(cat_stripe_chart)
 
 ```
@@ -115,18 +118,44 @@ plot(cat_stripe_chart)
 
 ## Spatial charts
 
+The associated data with the spatial charts it always a bit tricky, because there are just so many ways that a user could bring such data in and its not possible for the system to catch them all. So, some extra attention needs to be paid for this chart type. minCombinR does do some work for you when you join spatial datasets, so we can use that to add information. At a bare minimu, if you don't just want to draw the polygons of the shape file, but you want to add some information to them, you need to make sure that the data you've loaded in actually contains useable information. A lot of data does not, and its not possible for minCombinR to fill in those gaps. 
+
+
+```{r metar_reconcile}
+
+meta_tmp<-shape_dat@data$metadata
+geo<-shape_dat@data$geometry
+
+```
+
+
 There are two ways to view a geographic map. First, working from shape files:
 
+
+
 First, there's everything together
-```{r}
-spatial_chart<-specify_base(chart_type="choropleth",data="shape_dat")
+```{r choro_1,message=FALSE,warning=FALSE,fig.height=4,fig.width=4,units="in"}
+#metadata frome the shape files is incomplete
+#this is something you need to know and not something that the systems resolves for you
+#so, we'll work to clean up the metadata a bit more before 
+spatial_chart<-specify_base(chart_type="choropleth",data="shape_dat",color="admin0Name")
 plot(spatial_chart)
 ```
 
 Also, it possible just to see one individual map too, not just everything together
 
-```{r}
-spatial_chart<-specify_base(chart_type="choropleth",data="gin_shape_dat")
+
+Here's an example where we compute some new data and 
+```{r choro_2,message=FALSE,warning=FALSE,fig.height=4,fig.width=4,units="in"}
+#Let's change things up a little bit, lets plot the incidence of things
+#you can change the metadata, but you might wnat to store 
+gin_meta<-gin_shape_dat@data$metadata
+
+tab<-tab_dat@data[[1]] %>% group_by(location) %>% count()
+
+tab<-left_join(gin_meta,tab,by=c("admin1Name"="location"))
+
+spatial_chart<-specify_base(chart_type="choropleth",data="gin_shape_dat",metadata = "tab",color="n")
 plot(spatial_chart)
 ```
 
@@ -134,9 +163,8 @@ plot(spatial_chart)
 Second, is working from a co-ordinates from a tabular data file. The background raster image is supplied by the 'Openstreemaps' package (and the broader project). They do great work, consider supporting them if you like this feature too.
 
 ```{r map_charts,message=FALSE,warning=FALSE}
-map_chart<-specify_base("geographic map",data="tab_dat",lat = "latitude",long = "longitude")
+map_chart<-specify_base("geographic map",data="tab_dat",lat = "latitude",long = "longitude",color="year")
 plot(map_chart)
-
 ```
 
 ## Tree charts
@@ -148,27 +176,27 @@ plot(phyloTree_chart)
 ## Genomic charts
 
 A very standard alignment chart. This tends to still work if you've got very long sequences. There are some options to simply the output too. It's possible to pass a **diff_only** parameter, which will only show variant positions.
-```{r genomic_map}
+```{r genomic_map,message=FALSE,warning=FALSE,fig.height=5,fig.width=5,units="in"}
 genome_chart<-specify_base(data = "genomic_dat",chart_type = "alignment")
 plot(genome_chart)
 ```
 
 Sequence logo plots are also supported. These work well when there are a small number of variant positions, but when there are many, it's actually not a very nice visual. The user will recieve a prompt in those circumstances.
 
-```{r}
+```{r seq_logo,message=FALSE,warning=FALSE,fig.height=3,fig.width=3,units="in"}
 seqlogo_chart<-specify_base(data = "genomic_dat",chart_type = "sequence logo")
 plot(seqlogo_chart)
 ```
 
 See? Too many. Instead, it might be better to select a few specific regions to show that the user might know about. In the first case, there will be a warning the nothing is very different and the plot won't show:
 
-```{r}
+```{r seq_logo_two,message=FALSE,warning=FALSE,fig.height=3,fig.width=3,units="in"}
 seqlogo_chart<-specify_base(data = "genomic_dat",chart_type = "sequence logo",show_pos = 1:20)
 plot(seqlogo_chart)
 ```
 
 But there is a slightly more clever way to go about this too:
-```{r}
+```{r seq_logo_three,message=FALSE,warning=FALSE,fig.height=3,fig.width=3,units="in"}
 diff_seq<-get_diff_pos(genomic_dat) #little helper function that extracts the similar sequences
 seqlogo_chart<-specify_base(data = "genomic_dat",chart_type = "sequence logo",show_pos = diff_seq[1:20])
 plot(seqlogo_chart)

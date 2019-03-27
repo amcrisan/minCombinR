@@ -19,23 +19,34 @@ render_choropleth <- function(...) {
     data<-get(data,envir = globalenv())  #get data from the global environment
   }
 
+
   aes_val<-aes()
 
-  if(!is.na(color)){
-    #If the user enters internal ID
-    color<-if(color == "internalID") "minID" else color
-
-    if(!(color %in% colnames(data))){
-      print("The color variable you've specificed is not in the data. Skipping..")
-    }else{
-      aes_val<-aes_val + aes_string(fill = color)
+  if(!is.null(metadata)){
+    if(class(metadata)=="character"){
+      metadata<-get(metadata,envir = globalenv())
     }
 
+    data<-merge(data,metadata)
+
+    if(!is.na(color)){
+      #If the user enters internal ID
+      color<-if(color == "internalID") "minID" else color
+
+      if(!(color %in% colnames(data))){
+        print("The color variable you've specificed is not in the data. Skipping..")
+      }else{
+        aes_val<-aes_val + aes_string(fill = color)
+      }
+    }
   }
 
-  gg_chart<-ggplot2::ggplot(data=data,aes_val)+
-    ggplot2::geom_sf()+
-    theme_bw()
+  gg_chart<-ggplot2::ggplot(data,aes_val)+
+    ggplot2::geom_sf()
+
+  if(!(class(metadata[,color]) %in% c("character","factor","date"))){
+    gg_chart<-gg_chart+scale_fill_continuous(low="white",high="black")
+  }
 
   return(gg_chart)
 }

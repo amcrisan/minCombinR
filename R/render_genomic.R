@@ -185,16 +185,12 @@ render_alignment<-function(...){
   }
 
   #getting rid of x an y labels for massive character vectors
-  if(!is.na(x) && class(data[,x]) %in% c("character","factor")){
-    if(length(unique(data[,x])) > 50){
-      rm_x_labels<-TRUE
-    }
+  if(length(data) > 50){
+    rm_y_labels<-TRUE
   }
 
-  if(!is.na(y) && class(data[,y]) %in% c("character","factor")){
-    if(length(unique(data[,y])) > 50){
-      rm_y_labels<-TRUE
-    }
+  if(length(unique(tmp$pos)) > 50){
+    rm_x_labels<-TRUE
   }
 
   gg_chart<-common_stats_aesethetics(gg_chart,

@@ -52,7 +52,7 @@ map_chart<-specify_base("geographic map",data="tab_dat",lat = "latitude",long = 
 Many types general are essentially when the you just want to put a bunch of plots together and there are no spatial or visual linkages between the plots themselves.
 
 ```{r many_types_general,message=FALSE,warning=FALSE}
-mg_combo<-specify_combination(combo_type = "many_types_general",base_charts = c("bar_chart","phyloTree_chart","scatter_chart","map_chart"))
+mg_combo<-specify_combination(combo_type = "many_types_general",base_charts = c("bar_chart","phyloTree_chart","scatter_chart"))
 plot(mg_combo)
 ```
 
@@ -112,7 +112,7 @@ color_combo<-specify_combination(combo_type = "color_linked", base_charts = c("p
 plot(color_combo)
 ```
 
-### Composite combinations
+### Composite Spatially Aligned Combinations
 
 *This example will work without any errors*
 ```{r composite_no_error,message=FALSE,warning=FALSE}

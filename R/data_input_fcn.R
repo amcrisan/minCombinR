@@ -240,21 +240,28 @@ input_spatial<-function(file=NA,asObj=TRUE,dataID=NA,desc=NA,...){
   #create an object
   if(asObj){
     sfc_meta<-NA
-    sfc_info<-nc
+    sfc_geodat<-nc
 
     #if there is any metadata, split it out into a data frame
     if(ncol(nc)>1){
       sfc_idx<-sapply(sapply(nc,class),function(x){"sfc" %in% x})
-      sfc_info<-nc[,which(sfc_idx)]
+      sfc_geodat<-nc[,which(sfc_idx)]
+
       nc<-as.data.frame(nc)
       sfc_meta<-nc[,which(!sfc_idx)]
+
+      #make a unique identifier that links these together
+      #they all should be in order.
+      itemID<-paste("polyID",randID(nrow(sfc_geodat)),sep = "_")
+      sfc_geodat$minPolyID<-itemID
+      sfc_meta$minPolyID<-itemID
     }
 
     objDat<-new("gevitDataObj",
                 id  = paste("spatial",dataID,sep="_"),
                 type = "spatial",
                 source = file,
-                data = list(geometry=sfc_info,
+                data = list(geometry=sfc_geodat,
                             metadata = sfc_meta))
     return(objDat)
   }else{
@@ -271,8 +278,9 @@ join_spatial_data<-function(...,obj_names = NULL){
   #spatial object variables
   dataID<-paste("spatial",randID(),sep="_")
 
-  geo_data<-c()
-  geo_metadata<-c()
+  geo_data<-NULL
+  geo_metadata<-NULL
+
 
   for(idx in 1:length(spatial_obj)){
 
@@ -290,23 +298,31 @@ join_spatial_data<-function(...,obj_names = NULL){
     #adding to the geometry item
     geo_tmp_col<-colnames(geo_tmp)
 
-    if(length(geo_tmp_col)>1){
-      warning("This method assumes that your shape file data only contains geometry information. Strange sideffects may ensue.")
+    geo_tmp$minID<-rep(item_id,times = nrow(geo_tmp))
+
+    if(is.null(geo_data)){
+      geo_data<-geo_tmp
+    }else{
+      #normall, I could prefer to use st_join, but it doesn't support
+      #full joins so I'll just do this manuall
+      geo_data<-rbind(geo_tmp,geo_data)
     }
-
-    geo_tmp<-cbind(rep(item_id,times = nrow(geo_tmp)),geo_tmp)
-    colnames(geo_tmp)<- c("minID",geo_tmp_col)
-
-    geo_data<-rbind(geo_data,geo_tmp)
 
     #adding to metadata item
     if(is.null(geo_meta_tmp) | all(is.na(geo_meta_tmp))) next
 
-    geo_meta_col<-colnames(geo_meta_tmp)
-    geo_meta_tmp<-cbind(rep(item_id,times = nrow(geo_tmp)),geo_meta_tmp)
-    colnames(geo_meta_tmp)<-c("minID",geo_tmp_col)
+    geo_meta_tmp$minID<-rep(item_id,times = nrow(geo_tmp))
 
-    geo_metadata<-rbind(geo_metadata,geo_meta_tmp)
+    if(is.null(geo_metadata)){
+      geo_metadata<-geo_meta_tmp
+    }else{
+      geo_metadata<-dplyr::full_join(geo_metadata,geo_meta_tmp)
+    }
+    #geo_meta_col<-colnames(geo_meta_tmp)
+    #geo_meta_tmp<-cbind(rep(item_id,times = nrow(geo_tmp)),geo_meta_tmp)
+    #colnames(geo_meta_tmp)<-c("minID",geo_tmp_col)
+
+    #geo_metadata<-rbind(geo_metadata,geo_meta_tmp)
   }
 
   source_info<-sapply(spatial_obj,function(x){x@id})

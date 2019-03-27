@@ -318,7 +318,8 @@ render_histogram<- function(...) {
   #so they can be accessed without using a list
   list2env(spec_list,env=environment())
 
-  gg_chart <- ggplot(data, aes_string(x=x)) +
+
+  gg_chart <- ggplot(data, aes_string(x=x))+
     geom_histogram()
 
 
@@ -369,7 +370,7 @@ render_1D_density <- function(...) {
   #so they can be accessed without using a list
   list2env(spec_list,env=environment())
 
-  gg_chart <- ggplot(data, aes_string(x)) + geom_density(kernel = "gaussian")
+  gg_chart <- ggplot(data, aes_string(x)) + geom_density(kernel = "gaussian",fill="black")
 
   gg_chart<-common_stats_aesethetics(gg_chart,
                                      title=title,
@@ -461,7 +462,7 @@ render_swarm_plot <- function(...) {
   #so they can be accessed without using a list
   list2env(spec_list,env=environment())
 
-  gg_chart <- ggplot(data, aes_string(x, y)) + ggbeeswarm::geom_beeswarm()
+  gg_chart <- ggplot(data, aes_string(x=x,y= y)) + ggbeeswarm::geom_quasirandom()
 
   if(!is.na(color)) {
     #Add colour variable
@@ -487,9 +488,6 @@ render_swarm_plot <- function(...) {
       rm_y_labels<-TRUE
     }
   }
-
-
-  browser()
 
   gg_chart<-common_stats_aesethetics(gg_chart,
                                      title=title,
