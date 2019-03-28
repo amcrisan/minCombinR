@@ -29,6 +29,8 @@ render_timeline<-function(...){
   start<-if(is.na(start) & !is.na(x)) x else start
 
   aes_val<-aes_string(x = start, y = y)
+
+
   #check if start and (if applicable) end dates are actually dates
   #--- TO DO : Very loose, makes too many assumptions. Attend to more closely ---
   if(!class(date_tmp[,start]) %in% c("Date")){

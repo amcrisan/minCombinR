@@ -79,6 +79,11 @@ plot(pie_chart)
 
 ```
 
+```{r}
+scatter<-specify_base(chart_type="scatter",data="tab_dat",y="country",x="site.id")
+plot(scatter)
+```
+
 minCombinR can also work with data frames so you can perform some analyses and go ahead and plot the data. 
 Here's an example using a line chart :
 

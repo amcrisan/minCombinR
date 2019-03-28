@@ -292,6 +292,7 @@ render_scatter <- function(...) {
   }
 
 
+  print(rm_x_labels)
   gg_chart<-common_stats_aesethetics(gg_chart,
                                      title=title,
                                      flip_coord = flip_coord,
@@ -533,6 +534,7 @@ common_stats_aesethetics<-function(gg_chart=NA,
                                    shrink_plot_margin=FALSE){
 
 
+  print(rm_x_labels)
   if(!is.na(title)) {
     gg_chart <- gg_chart + ggtitle(title)
   }
@@ -567,15 +569,13 @@ common_stats_aesethetics<-function(gg_chart=NA,
 
   if(rm_x_labels) {
     gg_chart <- gg_chart +
-      ggplot2::theme_update(axis.title.x = element_blank(),
-            axis.text.x = element_blank(),
+      ggplot2::theme_update(axis.text.x = element_blank(),
             axis.ticks.x = element_blank())
   }
 
   if(rm_y_labels) {
     gg_chart <- gg_chart +
-      ggplot2::theme_update(axis.title.y = element_blank(),
-            axis.text.y = element_blank(),
+      ggplot2::theme_update(axis.text.y = element_blank(),
             axis.ticks.y = element_blank())
   }
 
