@@ -49,25 +49,25 @@ library(mincombinr)
 library(dplyr)
 
 # ---- Data Input ----
-#input data you data using : input_data
-tab_dat<-input_data(file = system.file("extdata", "ebov_metadata.csv", package = "mincombinr"),dataType = "table")
+# input data you data using : input_data
+tab_dat <- input_data(file = system.file("extdata", "ebov_metadata.csv", package = "mincombinr"), dataType = "table")
 
-tree_dat<-input_data(file = system.file("extdata", "ebov_tree.nwk", package = "mincombinr"),dataType = "tree")
+tree_dat <- input_data(file = system.file("extdata", "ebov_tree.nwk", package = "mincombinr"), dataType = "tree")
 
 # ---- Single Charts ----
-#create basic single charts using : specify_base
-phyloTree_chart<-specify_base(chart_type = "phylogenetic tree",data="tree_dat")
+# create basic single charts using : specify_base
+phyloTree_chart <- specify_base(chart_type = "phylogenetic tree", data = "tree_dat")
 
-scatter_chart<-specify_base(chart_type = "scatter",data="tab_dat",x = "month",y="site.id")
+scatter_chart <- specify_base(chart_type = "scatter",data = "tab_dat",x = "month",y = "site.id")
 
-scatter_chart_two<-specify_base(chart_type = "scatter",data="tab_dat",x = "country",y="site.id",title="Cases by country")
+scatter_chart_two <- specify_base(chart_type = "scatter", data = "tab_dat", x = "country", y = "site.id", title = "Cases by country")
 
-#plot single charts using the plot command
+# plot single charts using the plot command
 plot(scatter_chart_two)
 
 # ---- COMBINATIONS ----
-#create combinations using : specify_combination
-composite_combo<-specify_combination(combo_type = "composite", base_charts = c("phyloTree_chart","scatter_chart_two","scatter_chart"),link_by="country")
+# create combinations using : specify_combination
+composite_combo <- specify_combination(combo_type = "composite", base_charts = c("phyloTree_chart", "scatter_chart_two", "scatter_chart"), link_by = "country")
 
 plot(composite_combo)
 
