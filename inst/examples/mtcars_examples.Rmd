@@ -1,0 +1,67 @@
+---
+title: "Examples Using mtcars"
+author: "Shannah Fisher"
+date: "2019-03-27"
+output: html_document
+---
+
+This document demonstrates how to implement and plot different chart types and chart combinations using minCombinR. It will be using the classic tabular mtcars dataset that is built into R. This document assumes that you have already run the "Getting started with minCombinR".
+
+
+```{r, message = FALSE, warning = FALSE}
+
+devtools::load_all() # TODO: temporary once things are done
+library(dplyr)
+library(shiny)
+
+# Load in the mtcars dataset
+data(mtcars)
+
+# Let's first transform the "am" attribute from ordered to categorical:
+# This involves transforming all instances of 1/0 to "Automatic"/"Manual": 
+mtcars$am <- factor(mtcars$am, labels = c("Automatic", "Manual"))
+
+```
+
+## Common statistical charts
+
+```{r common_stats_mtcars, message = FALSE, warning = FALSE, fig.height = 2, fig.width = 2, units = "in"}
+
+# Let's specify and plot some single charts.
+
+# Bar chart:
+bar_chart <- specify_base(chart_type = "bar", data = "mtcars", x = "am")
+plot(bar_chart)
+
+# Scatter plot:
+scatter_chart <- specify_base(chart_type = "scatter", data = "mtcars", x = "hp", y = "mpg")
+plot(scatter_chart)
+
+# Histogram:
+histogram_chart <- specify_base(chart_type = "histogram", data = "mtcars", x = "mpg")
+plot(histogram_chart)
+
+# Probability Density Function (PDF) plot:
+pdf_chart <- specify_base(chart_type = "pdf", data = "mtcars", x = "wt")
+plot(pdf_chart)
+
+# Boxplot:
+boxplot_chart <- specify_base(chart_type = "boxplot", data = "mtcars", x = "am", y = "hp")
+plot(boxplot_chart)
+
+# Swarm plot:
+swarmplot_chart <- specify_base(chart_type = "swarmplot", data = "mtcars", x = "am", y = "mpg")
+plot(swarmplot_chart)
+
+# We'll even let you make a pie chart:
+pie_chart <- specify_base(chart_type = "pie", data = "mtcars", x = "am")
+plot(pie_chart)
+
+```
+
+## Combinations
+
+```{r combo_mtcars, message = FALSE, warning = FALSE, fig.height = 2, fig.width = 2, units = "in"}
+#te
+
+```
