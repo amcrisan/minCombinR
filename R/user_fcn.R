@@ -91,7 +91,7 @@ check_param<-function(...){
 #'
 #' @return a specification for a base chart type that will be read by gevitR::plot
 #' @export
-specify_base<-function(chart_type=NULL, data=NULL,...){
+specify_single<-function(chart_type=NULL, data=NULL,...){
   if(is.null(chart_type))
     stop("Please specify a chart type. Use base_chart_types() to see a list of chart types")
 
@@ -201,8 +201,8 @@ specify_combination<-function(combo_type=NA,
     if(is.na(combo_specs$facet_by))
     stop("Not all parameters specified for small multiples")
 
-  # ------- Many Types Linked  -------
-  }else if(combo_type == "color_linked"){
+  # ------- Color Aligned  -------
+  }else if(combo_type == "color_aligned"){
     if(is.na(combo_specs$link_by)){
       stop("Stop! You must specifcy a linking variable for many types linked")
     }
@@ -341,8 +341,8 @@ specify_combination<-function(combo_type=NA,
       combo_specs$base_charts<-keep_chart$chart
     }
 
-  # ------- Composite  ------
-  }else if(combo_type == "composite"){
+  # ------- Spatial Aligned  ------
+  }else if(combo_type == "spatial_aligned"){
     #if(!(all(c("alignment","common_var","ordered") %in% combo_spec_passed)))
     #  stop("Not all parameters specified for composite")
     #check that all charts passed are combinable, if not, only return those that are
@@ -470,10 +470,10 @@ plot.gevitSpec<-function(specs = NULL,do_not_display=FALSE){
   }else if("comboSpecs" %in% class(specs)){ #multiple plots
     #instead of just making a simple specification, the user wants a combination
 
-    # ------- Many Types General  ------
+    # ------- Unaligned  ------
     #"Many types genera"l means you just want to put a bunch of plots together
     #and they are not spatially or visually linked in any way
-    if (specs$combo_type == "many_types_general") {
+    if (specs$combo_type == "unaligned") {
       base_specs<-c()
       for(spec_name in specs$base_charts){
         tmp<-get(spec_name,envir = globalenv())
@@ -498,12 +498,12 @@ plot.gevitSpec<-function(specs = NULL,do_not_display=FALSE){
     }
 
     # ------- Composite  ------
-    if (specs$combo_type == "composite") {
+    if (specs$combo_type == "spatial_aligned") {
       spec_plot<-do.call(plot_composite,args = specs, envir = parent.frame())
     }
 
     # ------- Many Types Linked  ------
-    if (specs$combo_type == "color_linked"){
+    if (specs$combo_type == "color_aligned"){
       spec_plot<-do.call(plot_many_linked, args = specs,envir=parent.frame())
     }
 

@@ -28,7 +28,7 @@ tab_dat<-data.frame(sample_id= id,
                     suscept_status= sample(c("susceptible","resistant"),replace =TRUE,size=length(id)),
                     location = c(1:length(id)),
                     age = sample(25:80,replace=FALSE,size=length(id)),
-                    exposure = sample(c("food","surface","unknown"),replace =TRUE,size=length(id)))
+                    exposure = sample(c("food","animal","person","unknown"),replace =TRUE,size=length(id)))
 
 sample_date<-c()
 sympt_date<-c()
@@ -48,12 +48,12 @@ tab_dat$sympt_date<-as.Date(sympt_date)
 
 #Some Single Charts
 ```{r, fig.height=3,fig.width=3,unit="in"}
-phyloTree_chart <- specify_base(chart_type = "phylogenetic tree", data = "tree_dat")
+phyloTree_chart <- specify_single(chart_type = "phylogenetic tree", data = "tree_dat")
 plot(phyloTree_chart)
 ```
 
 ```{r}
-timeline_chart <- specify_base(chart_type = "timeline", 
+timeline_chart <- specify_single(chart_type = "timeline", 
                                data = "tab_dat", 
                                start = "sample_date", 
                                end ="sympt_date", 
@@ -62,7 +62,7 @@ plot(timeline_chart)
 ```
 
 ```{r}
-scatter_chart <- specify_base(chart_type = "scatter", data = "tab_dat", x = "sample_id", y = "suscept_status")
+scatter_chart <- specify_single(chart_type = "scatter", data = "tab_dat", x = "sample_id", y = "suscept_status")
 plot(scatter_chart)
 ```
 
@@ -72,22 +72,33 @@ plot(scatter_chart)
 tree_dat_2<-tree_dat
 tree_dat_2@data$metadata<-tab_dat
 
-phyloTree_chart_2 <- specify_base(chart_type = "phylogenetic tree", data = "tree_dat_2")
+phyloTree_chart_2 <- specify_single(chart_type = "phylogenetic tree", data = "tree_dat_2")
 
 sm_combo_tree <- specify_combination(combo_type = "small_multiple",
                                      base_charts = "phyloTree_chart_2",
                                      facet_by = "exposure")
 plot(sm_combo_tree)
-
 ```
 
-```{r sm}
-composite_combo <- specify_combination(combo_type = "composite",
+```{r sm, fig.height=5,fig,width=10,unit="in"}
+composite_combo <- specify_combination(combo_type = "spatial_aligned",
                                        base_charts = c("phyloTree_chart","scatter_chart","timeline_chart"))
 
 plot(composite_combo)
-
-
 ```
 
+```{r}
+mg_combo <- specify_combination(combo_type = "unaligned",
+                                       base_charts = c("phyloTree_chart","scatter_chart","timeline_chart"))
+
+plot(mg_combo)
+```
+
+```{r}
+cl_combo <- specify_combination(combo_type = "color_aligned",
+                                       base_charts = c("phyloTree_chart_2","scatter_chart","timeline_chart"),
+                                link_by = "exposure")
+
+plot(cl_combo)
+```
 

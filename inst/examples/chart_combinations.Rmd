@@ -49,19 +49,19 @@ First, let's store the specifications for a few charts that we want to combine t
 ```{r individual_charts,message=FALSE,warning=FALSE}
 
 # Bar chart
-bar_chart <- specify_base(chart_type = "bar", data = "tab_dat", x = "country")
+bar_chart <- specify_single(chart_type = "bar", data = "tab_dat", x = "country")
 
 # Phylogenetic Tree
-phyloTree_chart <- specify_base(chart_type = "phylogenetic tree", data = "tree_dat")
+phyloTree_chart <- specify_single(chart_type = "phylogenetic tree", data = "tree_dat")
 
 # Scatter Plot
-scatter_chart <- specify_base(chart_type = "scatter", 
+scatter_chart <- specify_single(chart_type = "scatter", 
                               data = "tab_dat", 
                               x = "latitude", 
                               y = "longitude", 
                               title = "Ebola Scatter Plot")
 # Geographic Map
-map_chart <- specify_base("geographic map", data = "tab_dat", lat = "latitude", long = "longitude")
+map_chart <- specify_single("geographic map", data = "tab_dat", lat = "latitude", long = "longitude")
 ```
 
 ### Many Types General
@@ -69,7 +69,7 @@ Many types general can be used when you just want to put a bunch of plots togeth
 
 ```{r many_types_general, message=FALSE, warning=FALSE}
 # Specify that you want to combine the bar_chart, phyloTree_chart and scatter_chart
-mg_combo <- specify_combination(combo_type = "many_types_general", 
+mg_combo <- specify_combination(combo_type = "unaligned", 
                                 base_charts = c("bar_chart","phyloTree_chart","scatter_chart"))
 # Now plot it!
 plot(mg_combo)
@@ -80,7 +80,7 @@ Small multiple charts are visually linked because they show the same underlying 
 
 ```{r small_multiples,message=FALSE,warning=FALSE}
 # Specify the base chart type with all of the data that you wish to use:
-scatter_chart <- specify_base(chart_type = "scatter", data = "tab_dat", x = "latitude", y = "longitude")
+scatter_chart <- specify_single(chart_type = "scatter", data = "tab_dat", x = "latitude", y = "longitude")
 
 # Now specify the small multiple combination
 sm_combo_scatter <- specify_combination(combo_type = "small_multiple", 
@@ -94,7 +94,7 @@ sm_combo_bar <- specify_combination(combo_type = "small_multiple",
 plot(sm_combo_bar)
 
 # Let's try a more interesting bar_chart small multiple
-bar_chart_alt <- specify_base(chart_type = "bar", data = "tab_dat", x = "year", title = "All together")
+bar_chart_alt <- specify_single(chart_type = "bar", data = "tab_dat", x = "year", title = "All together")
 sm_combo_bar_alt <- specify_combination(combo_type = "small_multiple", 
                                         base_charts = "bar_chart_alt", 
                                         facet_by = "country")
@@ -118,7 +118,7 @@ tree_dat_meta <- input_data(file = system.file("extdata", "ebov_tree.nwk", packa
                             metadata = system.file("extdata", "ebov_metadata.csv", 
                                                    package = "mincombinr"))
 # Specify the simple tree
-tree_chart <- specify_base(chart_type = "phylogenetic tree",
+tree_chart <- specify_single(chart_type = "phylogenetic tree",
                          data = "tree_dat_meta")
 
 # Let's see what it looks like without facetting
@@ -132,80 +132,80 @@ plot(sm_combo_tree)
 
 ```
 
-### Color Linked Combinations
+### Color Aligned Combinations
 
 Finally, it could be interesting to link several different chart types together by color.  
 
 In the above examples, we may want to link the phylogenetic tree with the timeline by their countries.  
 
-For the non-tabular data, it's important to have some associated metadata, otherwise, it is not possible to link information. It is up to the user to establish that two variables are actually linkable by the same variable. Some of the code form the composite combination is borrowed to see if two datasets are even linkable to help with the color linkage.
+For the non-tabular data, it's important to have some associated metadata, otherwise, it is not possible to link information. It is up to the user to establish that two variables are actually linkable by the same variable. Some of the code form the spatial aligned combination is borrowed to see if two datasets are even linkable to help with the color linkage.
 
 **First scenario - no metadata provided for the tree**
 
 minCombinR will try to find if there are linkages between the tabular data in one chart and non-tabular data in another chart. If there are EXACT MATCHES, it will link the tabular data to the tree's metadata
 ```{r}
 # Specify the phylogenetic tree and histogram
-phyloTree_chart <- specify_base(chart_type = "phylogenetic tree", data = "tree_dat")
-epicurve <- specify_base(chart_type = "histogram", data = "tab_dat", x = "month")
+phyloTree_chart <- specify_single(chart_type = "phylogenetic tree", data = "tree_dat")
+epicurve <- specify_single(chart_type = "histogram", data = "tab_dat", x = "month")
 
 # Specify that you want to combine with color
-color_combo <- specify_combination(combo_type = "color_linked", 
+color_combo <- specify_combination(combo_type = "color_aligned", 
                                    base_charts = c("phyloTree_chart","map_chart","epicurve"),
                                    link_by = "country")
 # Now plot!
 plot(color_combo)
 ```
 
-### Composite Spatially Aligned Combinations
+### Spatially Aligned Combinations
 
 *This example will work without any errors*
 ```{r composite_no_error,message=FALSE,warning=FALSE}
-scatter_chart <- specify_base(chart_type = "scatter", data = "tab_dat", x = "month", y = "site.id")
-scatter_chart_two <- specify_base(chart_type = "scatter", data = "tab_dat", x = "country", 
+scatter_chart <- specify_single(chart_type = "scatter", data = "tab_dat", x = "month", y = "site.id")
+scatter_chart_two <- specify_single(chart_type = "scatter", data = "tab_dat", x = "country", 
                                   y = "site.id", title = "Cases by country")
 
-composite_combo <- specify_combination(combo_type = "composite",
+spatial_aligned_combo <- specify_combination(combo_type = "spatial_aligned",
                                        base_charts = c("phyloTree_chart","scatter_chart","scatter_chart_two"))
 
-plot(composite_combo)
+plot(spatial_aligned_combo)
 
 ```
 
 Example without the phylogenetic tree
 
 
-*This example will have an error because pie charts cannot be part of composite combinations*
+*This example will have an error because pie charts cannot be part of spatial aligned combinations*
 Pie chart will be automatically removed from the specifications with a warning message to the user
 ```{r composite_no_error_two,message=FALSE,warning=FALSE,}
 # Specifications
-pie_chart <- specify_base(chart_type = "pie", data = "tab_dat", x = "country")
-composite_combo <- specify_combination(combo_type = "composite",
+pie_chart <- specify_single(chart_type = "pie", data = "tab_dat", x = "country")
+spatial_aligned_combo <- specify_combination(combo_type = "spatial_aligned",
                                        base_charts = c("phyloTree_chart", "scatter_chart", "scatter_chart_two", "pie_chart"))
 
 # Plot
-plot(composite_combo)
+plot(spatial_aligned_combo)
 
 ```
 
 Let's try combining a phylogenetic tree, bar chart, and scatter chart
 ```{r}
 # Specifications
-bar_alt <- specify_base(chart_type = "bar", data = "tab_dat", x = "site.id", y = "month", rm_x_label=TRUE)
+bar_alt <- specify_single(chart_type = "bar", data = "tab_dat", x = "site.id", y = "month", rm_x_label=TRUE)
 
-composite_combo <- specify_combination(combo_type = "composite",
+spatial_aligned_combo <- specify_combination(combo_type = "spatial_aligned",
                                        base_charts = c("phyloTree_chart", "bar_alt", "scatter_chart_two"))
 
 # Plot
-plot(composite_combo)
+plot(spatial_aligned_combo)
 
 ```
 
 *It also works when there isn't a tree involved
 ```{r}
-composite_combo <- specify_combination(combo_type = "composite",
+spatial_aligned_combo <- specify_combination(combo_type = "spatial_aligned",
                                        base_charts = c("bar_alt", "scatter_chart", "scatter_chart_two"))
 
-plot(composite_combo)
+plot(spatial_aligned_combo)
 
 ```
 
@@ -214,7 +214,7 @@ Here's a combination with a genomic map.
 # Genomic chart
 # For illustrative purposes, show fewer positions
 diff_seq <- get_diff_pos(genomic_dat)
-genome_chart <- specify_base(data = "genomic_dat",
+genome_chart <- specify_single(data = "genomic_dat",
                              chart_type = "alignment",
                              title="Genome Alignment",
                              show_pos=diff_seq[1:20])
@@ -237,20 +237,20 @@ time_dat$collection_date_end <- sapply(as.character(time_dat$collection_date_end
 time_dat <- dplyr::filter(time_dat,!is.na(collection_date_end))
 
 # Specifications
-timeline_chart <- specify_base(chart_type = "timeline",
+timeline_chart <- specify_single(chart_type = "timeline",
                                data="time_dat",
                                start = "collection_date",
                                end ="collection_date_end", 
                                y = "site.id",
                                title="Timeline")
 
-composite_combo <- specify_combination(combo_type = "composite", 
+spatial_aligned_combo <- specify_combination(combo_type = "spatial_aligned", 
                                        base_charts = c("phyloTree_chart",
                                                        "scatter_chart_two",
                                                        "timeline_chart",
                                                        "genome_chart"))
 # Plot
-plot(composite_combo)
+plot(spatial_aligned_combo)
 
 ```
 

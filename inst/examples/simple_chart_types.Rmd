@@ -2,7 +2,12 @@
 title: "Simple Chart Type Examples"
 author: "Anamaria Crisan"
 date: '2019-01-08'
-output: html_document
+output:
+  pdf_document:
+    fig_width: 2
+    fig_height: 2
+    fig_caption: false
+    keep_tex: yes
 ---
 
 This document demonstrates how to implement and plot different chart types using minCombinR. This document assumes that you have already run the "Getting started with minCombinR" and that the necessary data has already been loaded into your R workspace.
@@ -50,37 +55,37 @@ shape_dat <- join_spatial_data(gin_shape_dat, lbr_shape_dat, sle_shape_dat)
 # Let's specify and plot some single charts.
 
 # Bar chart:
-bar_chart <- specify_base(chart_type = "bar", data = "tab_dat", x = "country")
+bar_chart <- specify_single(chart_type = "bar", data = "tab_dat", x = "country")
 plot(bar_chart)
 
 # Scatter plot with a title:
-scatter_chart <- specify_base(chart_type = "scatter", data = "tab_dat", x = "latitude", y = "longitude", title = "Ebola Scatter Plot")
+scatter_chart <- specify_single(chart_type = "scatter", data = "tab_dat", x = "latitude", y = "longitude", title = "Ebola Scatter Plot")
 plot(scatter_chart)
 
 # Histogram:
-histogram_chart <- specify_base(chart_type = "histogram", data = "tab_dat", x = "latitude")
+histogram_chart <- specify_single(chart_type = "histogram", data = "tab_dat", x = "latitude")
 plot(histogram_chart)
 
 # Probability Density Function (PDF) plot:
-pdf_chart <- specify_base(chart_type = "pdf", data = "tab_dat", x = "latitude")
+pdf_chart <- specify_single(chart_type = "pdf", data = "tab_dat", x = "latitude")
 plot(pdf_chart)
 
 # Boxplot
-boxplot_chart <- specify_base(chart_type = "boxplot",data="tab_dat",x = "country", y ="latitude")
+boxplot_chart <- specify_single(chart_type = "boxplot",data="tab_dat",x = "country", y ="latitude")
 plot(boxplot_chart)
 
 # Swarm plot
-beeswarm_chart <- specify_base(chart_type = "swarmplot",data="tab_dat",x = "country", y ="latitude")
+beeswarm_chart <- specify_single(chart_type = "swarmplot",data="tab_dat",x = "country", y ="latitude")
 plot(beeswarm_chart)
 
 # We'll even let you make a pie chart
-pie_chart <- specify_base(chart_type = "pie", data = "tab_dat", x = "country")
+pie_chart <- specify_single(chart_type = "pie", data = "tab_dat", x = "country")
 plot(pie_chart)
 
 ```
 
 ```{r}
-scatter<-specify_base(chart_type="scatter",data="tab_dat",y="country",x="site.id")
+scatter<-specify_single(chart_type="scatter",data="tab_dat",y="country",x="site.id")
 plot(scatter)
 ```
 
@@ -96,7 +101,7 @@ ebov_case_counts <- ebov %>%
   count()
 
 # Now let's specify and plot a line chart:
-line_chart <- specify_base(chart_type = "line", data = "ebov_case_counts", x = "month", y = "n", group = "country")
+line_chart <- specify_single(chart_type = "line", data = "ebov_case_counts", x = "month", y = "n", group = "country")
 plot(line_chart)
 
 ```
@@ -115,7 +120,7 @@ ebov_heat_data <- ebov %>%
   count()
 
 # Specify and plot a line chart:
-heatmap_chart <- specify_base(chart_type = "heatmap", data = "ebov_heat_data", x = "country", y = "month", color = "n")
+heatmap_chart <- specify_single(chart_type = "heatmap", data = "ebov_heat_data", x = "country", y = "month", color = "n")
 plot(heatmap_chart)
 
 ```
@@ -123,7 +128,7 @@ plot(heatmap_chart)
 ```{r D2_density_charts,message=FALSE,warning=FALSE,fig.height=2,fig.width=2,units="in"}
 
 # Density Chart:
-density_chart <- specify_base(chart_type = "density", data = "tab_dat", x = "latitude", y = "longitude")
+density_chart <- specify_single(chart_type = "density", data = "tab_dat", x = "latitude", y = "longitude")
 plot(density_chart)
 ```
 
@@ -134,7 +139,7 @@ But it's possible to generate a category stripe on its own.
 # TODO: ?
 # This doesn't quite work when there are a lot of labels
 # Maybe the answer here is just a 1D tile plot.
-cat_stripe_chart < -specify_base(chart_type = "heatmap", data = "tab_dat", y = "site.id", color = "bob", category = "country")
+cat_stripe_chart < -specify_single(chart_type = "heatmap", data = "tab_dat", y = "site.id", color = "bob", category = "country")
 plot(cat_stripe_chart)
 
 ```
@@ -170,11 +175,11 @@ First, let's specify and plot all of the regions in the map together
 # metadata from the shape files is incomplete
 # this is something you need to know and not something that the systems resolves for you
 # so, we'll work to clean up the metadata a bit more before we # TODO: Not sure what this was trying to say? maybe that we are going to complete the metadata in the next step?  (Shan)
-spatial_chart <- specify_base(chart_type = "choropleth", data = "shape_dat", color = "admin0Name")
+spatial_chart <- specify_single(chart_type = "choropleth", data = "shape_dat", color = "admin0Name")
 plot(spatial_chart)
 ```
 
-```{r choro_2,message=FALSE,warning=FALSE,fig.height=4,fig.width=4,units="in"}
+```{r choro_3,message=FALSE,warning=FALSE,fig.height=4,fig.width=4,units="in"}
 #metadata frome the shape files is incomplete
 #this is something you need to know and not something that the systems resolves for you
 #so, we'll work to clean up the metadata a bit more before 
@@ -193,7 +198,7 @@ tab<-left_join(shape_meta,tab,by=c("admin1Name"="location"))
 tab[is.na(tab$n),]$n<-0
 
 #visualize
-spatial_chart<-specify_base(chart_type="choropleth",
+spatial_chart<-specify_single(chart_type="choropleth",
                             data="shape_dat",
                             metadata="tab",#has priority over metadata stored with spatial object
                             color="admin0Name",
@@ -205,7 +210,7 @@ plot(spatial_chart)
 Also, it possible just to see one individual map too, not just everything together
 
 Here's an example where we compute some new data and specify and plot the "Guinea" region
-```{r choro_2,message=FALSE,warning=FALSE,fig.height=4,fig.width=4,units="in"}
+```{r choro_2,message=FALSE,warning=FALSE,fig.height=4,fig.width=4,units="in",eval=FALSE}
 # Let's change things up a little bit and plot the incidence of things
 
 # You can change the metadata
@@ -214,7 +219,7 @@ gin_meta <- gin_shape_dat@data$metadata
 tab<-left_join(gin_meta,tab,by=c("admin1Name"="location"))
 tab[is.na(tab$n),]$n<-0
 
-spatial_chart<-specify_base(chart_type="choropleth",data="gin_shape_dat",metadata = "tab",color="admin0Name",alpha="n")
+spatial_chart<-specify_single(chart_type="choropleth",data="gin_shape_dat",metadata = "tab",color="admin0Name",alpha="n")
 plot(spatial_chart)
 ```
 
@@ -224,14 +229,14 @@ Second, is working from a co-ordinates from a tabular data file. The background 
 
 ```{r map_charts,message=FALSE,warning=FALSE}
 # Geographic Map
-map_chart <- specify_base("geographic map", data = "tab_dat", lat = "latitude", long = "longitude", color = "year")
+map_chart <- specify_single("geographic map", data = "tab_dat", lat = "latitude", long = "longitude", color = "year")
 plot(map_chart)
 ```
 
 ## Tree charts
 ```{r tree_charts,message=FALSE,warning=FALSE,fig.height=2,fig.width=2,units="in"}
 # Phylogenetic Tree
-phyloTree_chart <- specify_base(chart_type = "phylogenetic tree", data = "tree_dat")
+phyloTree_chart <- specify_single(chart_type = "phylogenetic tree", data = "tree_dat")
 plot(phyloTree_chart)
 ```
 
@@ -240,21 +245,21 @@ plot(phyloTree_chart)
 A very standard alignment chart. This tends to still work if you've got very long sequences. There are some options to simply the output too. It's possible to pass a **diff_only** parameter, which will only show variant positions.
 ```{r genomic_map,message=FALSE,warning=FALSE,fig.height=5,fig.width=5,units="in"}
 # Alignment
-genome_chart <- specify_base(data = "genomic_dat", chart_type = "alignment")
+genome_chart <- specify_single(data = "genomic_dat", chart_type = "alignment")
 plot(genome_chart)
 ```
 
 Sequence logo plots are also supported. These work well when there are a small number of variant positions, but when there are many, it's actually not a very nice visual. The user will recieve a prompt in those circumstances.
 
 ```{r seq_logo,message=FALSE,warning=FALSE,fig.height=3,fig.width=3,units="in"}
-seqlogo_chart <- specify_base(data = "genomic_dat", chart_type = "sequence logo")
+seqlogo_chart <- specify_single(data = "genomic_dat", chart_type = "sequence logo")
 plot(seqlogo_chart)
 ```
 
 See? Too many. Instead, it might be better to select a few specific regions to show. In the first case, there will be a warning that nothing is very different and the plot won't show:
 
 ```{r seq_logo_two,message=FALSE,warning=FALSE,fig.height=3,fig.width=3,units="in"}
-seqlogo_chart <- specify_base(data = "genomic_dat", chart_type = "sequence logo", show_pos = 1:20)
+seqlogo_chart <- specify_single(data = "genomic_dat", chart_type = "sequence logo", show_pos = 1:20)
 plot(seqlogo_chart)
 ```
 
@@ -264,7 +269,7 @@ But there is a slightly more clever way to go about this too:
 diff_seq <- get_diff_pos(genomic_dat) 
 
 # Sequence Logo
-seqlogo_chart <- specify_base(data = "genomic_dat", chart_type = "sequence logo", show_pos = diff_seq[1:20])
+seqlogo_chart <- specify_single(data = "genomic_dat", chart_type = "sequence logo", show_pos = diff_seq[1:10])
 plot(seqlogo_chart)
 ```
 
@@ -289,7 +294,7 @@ tmp$collection_date_end <- sapply(as.character(tmp$collection_date_end),
                                     return(NA)
                                     })
 
-timeline_chart <- specify_base(chart_type = "timeline", 
+timeline_chart <- specify_single(chart_type = "timeline", 
                                data = "tmp", 
                                start = "collection_date", 
                                end ="collection_date_end", 
@@ -304,7 +309,7 @@ So here, only plotting those items that are ranges.
 ```{r}
 tmp_sub <- dplyr::filter(tmp,!is.na(collection_date_end))
 
-timeline_chart <- specify_base(chart_type = "timeline",
+timeline_chart <- specify_single(chart_type = "timeline",
                                data = "tmp_sub",
                                start = "collection_date", 
                                end = "collection_date_end", 
@@ -327,7 +332,7 @@ interior_img <- input_data(file = system.file("extdata", "random_interior_map.ti
 
 It's still possible to simply draw a plot that has no metadata
 ```{r imageOne_one_b}
-img_chart <- specify_base(chart_type = "image", data = "interior_img")
+img_chart <- specify_single(chart_type = "image", data = "interior_img")
 plot(img_chart)
 ```
 
@@ -354,7 +359,7 @@ load(file = system.file("extdata", "img_meta.rds", package = "mincombinr"))
 interior_img@data$metadata<-metadata
 
 # Now specify and plot the interior map
-img_chart <- specify_base(chart_type = "image", data = "interior_img")
+img_chart <- specify_single(chart_type = "image", data = "interior_img")
 plot(img_chart)
 ```
 
@@ -364,7 +369,7 @@ Let's do something more interesting and color these regions:
 interior_img@data$metadata$counts <- c(100,35)
 
 # Now specify and plot the interior map
-img_chart <- specify_base(chart_type = "image", data = "interior_img", color = "counts")
+img_chart <- specify_single(chart_type = "image", data = "interior_img", color = "counts")
 plot(img_chart)
 ```
 
@@ -374,7 +379,7 @@ The other most common type of image is a gel image - this too can now be part of
 gel_img <- input_data(file = system.file("extdata", "gel_image.tiff", package = "mincombinr"),
                       dataType = "image")
 
-gel_img_chart <- specify_base(chart_type = "image", data = "gel_img")
+gel_img_chart <- specify_single(chart_type = "image", data = "gel_img")
 plot(gel_img_chart)
 ```
 
@@ -388,7 +393,7 @@ metadata$element_name <- paste("item", 1:nrow(metadata), sep = "_")
 save(metadata,file="../inst/extdata/gel_img_meta.rds")
 ```
 
-```{r}
+```{r,fig.height= 3,fig.width=5}
 # Just like the interior map, we will load in an annotated image for the sake of demonstration:
 load(file = system.file("extdata", "gel_img_meta_shipped.rds", package = "mincombinr"))
 gel_img@data$metadata <- metadata
@@ -396,6 +401,6 @@ gel_img@data$metadata <- metadata
 gel_img@data$metadata$rnd_class <- sample(c("Resistant","Susceptible"), replace = TRUE, size = nrow(metadata))
 
 #Now we specify and plot the gel image
-gel_chart <- specify_base(data = "gel_img", chart_type = "image", color = "rnd_class")
+gel_chart <- specify_single(data = "gel_img", chart_type = "image", color = "rnd_class")
 plot(gel_chart)
 ```
