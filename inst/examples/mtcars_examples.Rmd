@@ -31,48 +31,48 @@ mtcars$carb <- factor(mtcars$carb)
 # Let's specify and plot some single charts.
 
 # Bar chart:
-bar_chart <- specify_base(chart_type = "bar", data = "mtcars", x = "am")
+bar_chart <- specify_single(chart_type = "bar", data = "mtcars", x = "am")
 plot(bar_chart)
 
 # Line chart:
-line_chart <- specify_base(chart_type = "line", data = "mtcars", x = "mpg", y = "hp")
+line_chart <- specify_single(chart_type = "line", data = "mtcars", x = "mpg", y = "hp")
 plot(line_chart)
 
 # Scatter plot:
-scatter_chart <- specify_base(chart_type = "scatter", data = "mtcars", x = "mpg", y = "hp")
+scatter_chart <- specify_single(chart_type = "scatter", data = "mtcars", x = "mpg", y = "hp")
 plot(scatter_chart)
 
 # Histogram:
-histogram_chart <- specify_base(chart_type = "histogram", data = "mtcars", x = "mpg")
+histogram_chart <- specify_single(chart_type = "histogram", data = "mtcars", x = "mpg")
 plot(histogram_chart)
 
 # Probability Density Function (PDF) plot:
-pdf_chart <- specify_base(chart_type = "pdf", data = "mtcars", x = "wt")
+pdf_chart <- specify_single(chart_type = "pdf", data = "mtcars", x = "wt")
 plot(pdf_chart)
 
 # Boxplot:
-boxplot_chart <- specify_base(chart_type = "boxplot", data = "mtcars", x = "am", y = "hp")
+boxplot_chart <- specify_single(chart_type = "boxplot", data = "mtcars", x = "am", y = "hp")
 plot(boxplot_chart)
 
 # Swarm plot:
-swarmplot_chart <- specify_base(chart_type = "swarmplot", data = "mtcars", x = "am", y = "mpg")
+swarmplot_chart <- specify_single(chart_type = "swarmplot", data = "mtcars", x = "am", y = "mpg")
 plot(swarmplot_chart)
 
 # We'll even let you make a pie chart:
-pie_chart <- specify_base(chart_type = "pie", data = "mtcars", x = "carb")
+pie_chart <- specify_single(chart_type = "pie", data = "mtcars", x = "carb")
 plot(pie_chart)
 
 ```
 
 ## Combinations
 
-### Many Types General
-Many types general can be used when you just want to put a bunch of plots together and there are no spatial or visual linkages between the plots themselves.
+### Unaligned
+Unaligned combinations can be used when you just want to put a bunch of plots together and there are no spatial or visual linkages between the plots themselves.
 
-```{r many_types_general_mtcars, message=FALSE, warning=FALSE}
+```{r unaligned_mtcars, message=FALSE, warning=FALSE}
 
 # Specify that you want to combine the bar_chart, box plot, scatter_chart and swarmplot_chart
-mg_combo <- specify_combination(combo_type = "many_types_general", 
+mg_combo <- specify_combination(combo_type = "unaligned", 
                                 base_charts = c("bar_chart","boxplot_chart","scatter_chart", "swarmplot_chart"))
 # Now plot it!
 plot(mg_combo)
@@ -84,7 +84,7 @@ Small multiple charts are visually linked because they show the same underlying 
 
 ```{r small_multiples_mtcars, message=FALSE, warning=FALSE}
 # Specify the base chart type with all of the data that you wish to use:
-scatter_chart <- specify_base(chart_type = "scatter", data = "mtcars", x = "mpg", y = "hp")
+scatter_chart <- specify_single(chart_type = "scatter", data = "mtcars", x = "mpg", y = "hp")
 
 # Now specify the small multiple combination
 sm_combo_scatter <- specify_combination(combo_type = "small_multiple", 
@@ -107,26 +107,26 @@ sm_combo_boxplot <- specify_combination(combo_type = "small_multiple",
 plot(sm_combo_boxplot)
 
 ```
-### Color Linked Combinations
+### Color Aligned Combinations
 
 It could be interesting to link several different chart types together by color.  
 
 If you have nontabular data, minCombinR will find matching links between non-tabular and tabular data so they can be color aligned. Mtcars is a tabular dataset, so we won't be demonstrating this here but if you are interested, check out the examples using the ebola dataset that can be found in the inst/examples folder in the r markdown notebook called chart_combinations. 
 
-```{r color_linked_mtcars, message=FALSE, warning=FALSE}
+```{r color_aligned_mtcars, message=FALSE, warning=FALSE}
 # Specify the line chart and the scatter chart that we want to combine
-my_scatter_chart <- specify_base(chart_type = "scatter", data = "mtcars", x = "hp", y = "mpg")
-my_bar_chart <- specify_base(chart_type = "bar", data = "mtcars", x = "carb")
+my_scatter_chart <- specify_single(chart_type = "scatter", data = "mtcars", x = "hp", y = "mpg")
+my_bar_chart <- specify_single(chart_type = "bar", data = "mtcars", x = "carb")
 
 # Specify that you want to combine with color
-color_combo <- specify_combination(combo_type = "color_linked", 
+color_combo <- specify_combination(combo_type = "color_aligned", 
                                    base_charts = c("my_scatter_chart", "my_bar_chart"),
                                    link_by = "am")
 # Now plot!
 plot(color_combo)
 ```
 
-### Composite Spatially Aligned Combinations
+### Spatially Aligned Combinations
 
 ```{r comp_mtcars}
 
@@ -135,16 +135,16 @@ plot(color_combo)
 mtcars_dat <- input_data(file = system.file("extdata", "mtcars.csv", package = "mincombinr"), 
                          dataType = "table")
 
-scatter_chart <- specify_base(chart_type = "scatter", data = "mtcars_dat", x = "wt", y = "am")
+scatter_chart <- specify_single(chart_type = "scatter", data = "mtcars_dat", x = "wt", y = "am")
 
-scatter_chart_two <- specify_base(chart_type = "scatter", data = "mtcars_dat", x = "wt", y = "am")
+scatter_chart_two <- specify_single(chart_type = "scatter", data = "mtcars_dat", x = "wt", y = "am")
 
-bar_alt <- specify_base(chart_type = "bar", data = "mtcars_dat", x = "am", y = "wt", rm_x_label=TRUE)
+bar_alt <- specify_single(chart_type = "bar", data = "mtcars_dat", x = "am", y = "wt", rm_x_label=TRUE)
 
-composite_combo <- specify_combination(combo_type = "composite",
+spatial_aligned_combo <- specify_combination(combo_type = "spatial_aligned",
                                        base_charts = c("bar_alt", "scatter_chart", "scatter_chart_two"))
 
-plot(composite_combo)
+plot(spatial_aligned_combo)
 ```
 
 ## ERRORS
@@ -154,31 +154,31 @@ plot(composite_combo)
 
 #This outputs empty charts because the rows are being removed
 # Specify bar chart:
-bar_chart <- specify_base(chart_type = "bar", data = "mtcars_dat", x = "am", y = "mpg")
+bar_chart <- specify_single(chart_type = "bar", data = "mtcars_dat", x = "am", y = "mpg")
 plot(bar_chart)
 
 # Specify box plot:
-boxplot_chart <- specify_base(chart_type = "boxplot", data = "mtcars_dat", x = "am", y = "mpg")
+boxplot_chart <- specify_single(chart_type = "boxplot", data = "mtcars_dat", x = "am", y = "mpg")
 plot(boxplot_chart)
 
 # Scatter plot:
-scatter_chart <- specify_base(chart_type = "scatter", data = "mtcars_dat", x = "hp", y = "mpg")
+scatter_chart <- specify_single(chart_type = "scatter", data = "mtcars_dat", x = "hp", y = "mpg")
 plot(scatter_chart)
 
-composite_combo2 <- specify_combination(combo_type = "composite",
+spatial_aligned_combo2 <- specify_combination(combo_type = "spatial_aligned",
                                        base_charts = c("bar_chart", "boxplot_chart", "scatter_chart"))
 
 # Plot
-plot(composite_combo2)
+plot(spatial_aligned_combo2)
 
 # Error #2:
 
 #This has error: Error in do.call(plot_simple, args = leadChart_baseSpecs, envir = parent.frame()) : second argument must be a list
 
-composite_combo3 <- specify_combination(combo_type = "composite",
+spatial_aligned_combo3 <- specify_combination(combo_type = "spatial_aligned",
                                        base_charts = c("bar_chart", "boxplot_chart", "bar_alt"))
 
 # Plot
-plot(composite_combo3)
+plot(spatial_aligned_combo3)
 
 ```
