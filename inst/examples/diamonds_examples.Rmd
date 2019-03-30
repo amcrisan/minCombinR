@@ -1,0 +1,130 @@
+---
+title: "diamonds_examples"
+author: "Shannah Fisher"
+date: "2019-03-28"
+output: html_document
+---
+
+This document demonstrates how to implement and plot different chart types and chart combinations using minCombinR. It will be using the classic tabular diamonds dataset that is built into R. This document assumes that you have already run the "Getting started with minCombinR".
+
+
+```{r setup, include = FALSE}
+
+devtools::load_all() # TODO: temporary once things are done
+library(dplyr)
+library(shiny)
+library(ggplot2)
+
+# Load in the mtcars dataset
+data(diamonds)
+
+# Here is what the diamonds dataset looks like (first 6 rows):
+head(diamonds)
+```
+
+## Common statistical charts
+
+```{r common_stats_diamonds, message = FALSE, warning = FALSE, fig.height = 4, fig.width = 4, units = "in"}
+
+# Let's specify and plot some single charts.
+
+# Bar chart:
+bar_chart <- specify_base(chart_type = "bar", data = "diamonds", x = "cut")
+plot(bar_chart)
+
+# Line chart:
+diamonds_GT_10000 <- diamonds %>%
+  filter(price > 10000)
+line_chart <- specify_base(chart_type = "line", data = "diamonds_GT_10000", x = "carat", y = "price")
+plot(line_chart)
+
+# Scatter plot:
+scatter_chart <- specify_base(chart_type = "scatter", data = "diamonds", x = "carat", y = "price")
+plot(scatter_chart)
+
+# Histogram:
+histogram_chart <- specify_base(chart_type = "histogram", data = "diamonds", x = "carat")
+plot(histogram_chart)
+
+# Probability Density Function (PDF) plot:
+pdf_chart <- specify_base(chart_type = "pdf", data = "diamonds", x = "carat")
+plot(pdf_chart)
+
+# Boxplot:
+boxplot_chart <- specify_base(chart_type = "boxplot", data = "diamonds", x = "color", y = "price")
+plot(boxplot_chart)
+
+# Swarm plot:
+swarmplot_chart <- specify_base(chart_type = "swarmplot", data = "diamonds", x = "color", y = "price")
+plot(swarmplot_chart)
+
+# We'll even let you make a pie chart:
+pie_chart <- specify_base(chart_type = "pie", data = "diamonds", x = "cut")
+plot(pie_chart)
+
+```
+
+## Combinations
+
+### Many Types General
+Many types general can be used when you just want to put a bunch of plots together and there are no spatial or visual linkages between the plots themselves.
+
+```{r many_types_general_diamonds, message=FALSE, warning=FALSE}
+
+# Specify that you want to combine the bar_chart, box plot, scatter_chart and swarmplot_chart
+mg_combo <- specify_combination(combo_type = "many_types_general", 
+                                base_charts = c("bar_chart", "line_chart", "scatter_chart"))
+# Now plot it!
+plot(mg_combo)
+```
+
+### Small Multiples
+Small multiple charts are visually linked because they show the same underlying chart type while showing different subsets of the data. Another common name for this is facets.
+
+
+```{r small_multiples_diamonds, message=FALSE, warning=FALSE}
+
+# Scatter plot:
+scatter_chart_tp <- specify_base(chart_type = "scatter", data = "diamonds", x = "table", y = "price")
+
+# Now specify the small multiple combination
+sm_combo_scatter <- specify_combination(combo_type = "small_multiple", 
+                                        base_charts = "scatter_chart_tp", 
+                                        facet_by = "color")
+plot(sm_combo_scatter)
+
+
+```
+### Color Linked Combinations
+
+It could be interesting to link several different chart types together by color.  
+
+If you have nontabular data, minCombinR will find matching links between non-tabular and tabular data so they can be color aligned. Mtcars is a tabular dataset, so we won't be demonstrating this here but if you are interested, check out the examples using the ebola dataset that can be found in the inst/examples folder in the r markdown notebook called chart_combinations. 
+
+```{r}
+
+# Specify that you want to combine with color
+color_combo <- specify_combination(combo_type = "color_linked", 
+                                   base_charts = c("scatter_chart", "bar_chart"),
+                                   link_by = "clarity")
+# Now plot!
+plot(color_combo)
+```
+
+### Composite Spatially Aligned Combinations
+
+```{r comp_mtcars}
+
+# Scatter plot:
+scatter_chart1 <- specify_base(chart_type = "scatter", data = "diamonds", x = "carat", y = "price")
+plot(scatter_chart)
+# Scatter plot:
+scatter_chart2 <- specify_base(chart_type = "scatter", data = "diamonds", x = "carat", y = "price")
+plot(scatter_chart)
+# Scatter plot:
+scatter_chart3 <- specify_base(chart_type = "scatter", data = "diamonds", x = "carat", y = "price")
+plot(scatter_chart)
+
+composite_combo <- specify_combination("composite", c("scatter_chart1", "scatter_chart2", "scatter_chart3"))
+plot(composite_combo)
+```
