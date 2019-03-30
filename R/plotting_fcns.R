@@ -223,7 +223,7 @@ plot_small_multiples <- function(...) {
       #just call a simple plot
       all_plots[[grpItem]]<-do.call(plot_simple,args=spec_list,envir = parent.frame())
     }
-    combo_plots<-arrange_plots(all_plots)
+    combo_plots<-arrange_plots(all_plots,combo_type = "small_multiple",...)
   }
   return(combo_plots)
 }
@@ -372,10 +372,10 @@ plot_composite<-function(...){
 
      #remove axis labels
       if(align_dir == "h"){
-          baseSpecs$rm_y_labels<-TRUE
-       }else{
-         baseSpecs$rm_x_labels<-TRUE
-       }
+         baseSpecs$rm_y_labels<-TRUE
+      }else{
+        baseSpecs$rm_x_labels<-TRUE
+      }
 
      #shrink plot margins on all combinations
      baseSpecs$shrink_plot_margin <-TRUE
@@ -406,7 +406,7 @@ plot_many_linked<-function(...){
     all_plots[[spec_name]]<-do.call(plot_simple,args=baseSpecs,envir = parent.frame())
   }
 
-  combo_plots<-arrange_plots(all_plots)
+  combo_plots<-arrange_plots(all_plots,combo_type="color_aligned")
 
   return(combo_plots)
 
@@ -415,26 +415,33 @@ plot_many_linked<-function(...){
 #'Helper function to arrange plots for displaying
 #'@title arrange_plots
 #'@param chart_list A list of charts
-arrange_plots <- function(chart_list, labels = NULL,align_dir=NULL, ...) {
+arrange_plots <- function(chart_list, labels = NULL,align_dir=NULL, combo_type=NULL, ...) {
 
-  chart_list <- lapply(chart_list, function(chart) {
-    chart<-if("list" %in% class(chart)) chart[[1]] else chart
-    chart_class<-class(chart)
+  # chart_list <- lapply(chart_list, function(chart) {
+  #   chart<-if("list" %in% class(chart)) chart[[1]] else chart
+  #   chart_class<-class(chart)
+  #
+  #   if ('ggtree' %in% chart_class) {
+  #     cowplot::plot_to_gtable(chart)
+  #   } else if('gg' %in% chart_class) {
+  #     cowplot::plot_to_gtable(chart)
+  #     # ggplotify::as.grob(chart)
+  #   } else if ('data.frame' %in% chart_class){
+  #     multipanelfigure::capture_base_plot(chart)
+  #   } else if ('htmlwidget' %in% chart_class) {
+  #     grid::grid.grabExpr(print(chart))
+  #   } else {
+  #     chart
+  #   }
+  # })
 
-    if ('ggtree' %in% chart_class) {
-      cowplot::plot_to_gtable(chart)
-    } else if('gg' %in% chart_class) {
-      cowplot::plot_to_gtable(chart)
-      # ggplotify::as.grob(chart)
-    } else if ('data.frame' %in% chart_class){
-      multipanelfigure::capture_base_plot(chart)
-    } else if ('htmlwidget' %in% chart_class) {
-      grid::grid.grabExpr(print(chart))
-    } else {
-      chart
+  if(!is.null(combo_type)){
+    if(combo_type == "color_aligned"){
+      for(i in 1:(length(chart_list)-1)){
+        chart_list[[i]]<-chart_list[[i]]+theme(legend.position="none")
+      }
     }
-  })
-
+  }
 
 
   #NOTES: in order to add a shared legend, pass in shared_legend = TRUE in the ...
@@ -445,7 +452,7 @@ arrange_plots <- function(chart_list, labels = NULL,align_dir=NULL, ...) {
       combo<-cowplot::plot_grid(plotlist = chart_list, ncol=1,labels = labels, align="v",...)
     }
   }else{
-    combo<-cowplot::plot_grid(plotlist = chart_list,labels = labels,...)
+    combo<-cowplot::plot_grid(plotlist = chart_list,labels = labels)
   }
 
   return(combo)

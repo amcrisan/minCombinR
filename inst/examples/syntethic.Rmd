@@ -18,7 +18,7 @@ tree_dat<-input_data(file = system.file("extdata", "sample.nwk", package="treeio
 genomic_dat<-input_data(file = system.file("extdata", "synth.fasta", package = "mincombinr"),
                         dataType = "dna")
 
-interior_img <- input_data(file = system.file("extdata", "synth_gel_image.tiff", package = "mincombinr"),
+gel_img <- input_data(file = system.file("extdata", "synth_gel_image.tiff", package = "mincombinr"),
                            dataType = "image")
 
 
@@ -26,7 +26,7 @@ id<-tree_dat@data$tipData
 
 tab_dat<-data.frame(sample_id= id,
                     suscept_status= sample(c("susceptible","resistant"),replace =TRUE,size=length(id)),
-                    location = c(1:length(id)),
+                    location = sample(c("School","Community Centre","Hospital"),replace=TRUE,size=length(id)),
                     age = sample(25:80,replace=FALSE,size=length(id)),
                     exposure = sample(c("food","animal","person","unknown"),replace =TRUE,size=length(id)))
 
@@ -102,3 +102,26 @@ cl_combo <- specify_combination(combo_type = "color_aligned",
 plot(cl_combo)
 ```
 
+```{r imageannote,eval=FALSE}
+gel_img<-annotate_image(gel_img)
+tmp<-gel_img@data$metadata #not sure why I had to do this
+save(tmp,file="../extdata/syn_gel_image_meta.rds")
+```
+
+```{r image_view}
+load(file="../extdata/syn_gel_image_meta.rds")
+meta_img<-inner_join(gel_img@data$metadata,tab_dat,by=c("element_name" = "sample_id"))
+gel_img@data$metadata<-meta_img
+
+image_spec<-specify_single(chart_type="image",data="gel_img",color="exposure")
+plot(image_spec)
+```
+
+```{r teaser}
+image_spec<-specify_single(chart_type="image",data="gel_img")
+scatter_spec<-specify_single(chart_type="scatter",data="tab_dat",x="age",y="location")
+
+color_combo<-specify_combination(combo_type = "color_aligned",base_charts = c("phyloTree_chart_2","timeline_chart","scatter_spec","image_spec"),link_by="exposure")
+
+plot(color_combo)
+```

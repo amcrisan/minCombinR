@@ -85,7 +85,7 @@ plot(pie_chart)
 ```
 
 ```{r}
-scatter<-specify_single(chart_type="scatter",data="tab_dat",y="country",x="site.id")
+scatter<-specify_single(chart_type="scatter",data="tab_dat",y="country",x="site_id")
 plot(scatter)
 ```
 
