@@ -10,6 +10,7 @@ render_bar<- function(...) {
 
   spec_list<-list(...)
 
+
   #put the specification variables in a location environment
   #so they can be accessed without using a list
   list2env(spec_list,env=environment())
@@ -248,20 +249,7 @@ render_scatter <- function(...) {
   #so need to take that out
   #put the specification variables in a location environment
   #so they can be accessed without using a list
-  list2env(spec_list,env=environment())
-
-  #getting rid of x an y labels for massive character vectors
-  if(!is.na(x) && class(data[,x]) %in% c("character","factor")){
-    if(length(unique(data[,x])) > 50){
-      rm_x_labels<-TRUE
-    }
-  }
-
-  if(!is.na(y) && class(data[,y]) %in% c("character","factor")){
-    if(length(unique(data[,y])) > 50){
-      rm_y_labels<-TRUE
-    }
-  }
+  list2env(spec_list,env= environment())
 
   gg_chart <- ggplot(data, aes_string(x=x, y=y)) +
     ggplot2::geom_point()
@@ -279,6 +267,7 @@ render_scatter <- function(...) {
   # }
 
 
+
   if(class(data[,x]) %in% c("character","factor")){
     if(length(unique(data[,x])) > 50){
       rm_x_labels<-TRUE
@@ -291,7 +280,6 @@ render_scatter <- function(...) {
     }
   }
 
-
   gg_chart<-common_stats_aesethetics(gg_chart,
                                      title=title,
                                      flip_coord = flip_coord,
@@ -302,6 +290,10 @@ render_scatter <- function(...) {
                                      rm_x_labels = rm_x_labels,
                                      rm_y_labels = rm_y_labels,
                                      shrink_plot_margin = shrink_plot_margin)
+
+  #odd rest
+  rm_y_labels<-FALSE
+  rm_x_labels<-FALSE
   return(gg_chart)
 }
 
@@ -532,59 +524,27 @@ common_stats_aesethetics<-function(gg_chart=NA,
                                    y_breaks = FALSE,
                                    shrink_plot_margin=FALSE){
 
-
   if(!is.na(title)) {
     gg_chart <- gg_chart + ggtitle(title)
   }
 
 
-  # if(all(!is.na(x_limits))) {
-  #   gg_chart <- gg_chart + xlim(x_limits)
-  # }
-  #
-  # if(all(!is.na(y_limits))) {
-  #   gg_chart <- gg_chart + ylim(y_limits)
-  # }
-  #
+  print(flip_coord)
   if(flip_coord) {
     gg_chart <- gg_chart + coord_flip()
   }
-  #
-  # if(!is.na(scale_y_cont)) {
-  #   gg_chart <- gg_chart + scale_y_continuous(scale_y_cont)
-  # }
-
-  #this is not a good way to do this, and needs to be addressed
-  #it only modifies discrete axes
-  # if(all(!is.na(y_labels))) {
-  #   gg_chart <- gg_chart + scale_y_discrete(breaks = y_breaks,labels = y_labels)
-  # }
-  #
-  # if(all(!is.na(x_labels))) {
-  #   gg_chart <- gg_chart + scale_x_discrete(breaks = x_breaks,labels = x_labels)
-  # }
-
 
   if(rm_x_labels) {
     gg_chart <- gg_chart +
-      ggplot2::theme_update(axis.title.x = element_blank(),
-            axis.text.x = element_blank(),
+      ggplot2::theme(axis.text.x = element_blank(),
             axis.ticks.x = element_blank())
   }
 
   if(rm_y_labels) {
     gg_chart <- gg_chart +
-      ggplot2::theme_update(axis.title.y = element_blank(),
-            axis.text.y = element_blank(),
+      ggplot2::theme(axis.text.y = element_blank(),
             axis.ticks.y = element_blank())
   }
-
-  # if(shrink_plot_margin){
-  #   gg_chart<-gg_chart +
-  #     ggplot2::theme_update(plot.margin = unit(c(0,0,0,0),"points"))
-  # }
-
-  #gg_chart<-gg_chart+theme_bw()
 
   return(gg_chart)
 }

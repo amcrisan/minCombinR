@@ -29,6 +29,8 @@ render_timeline<-function(...){
   start<-if(is.na(start) & !is.na(x)) x else start
 
   aes_val<-aes_string(x = start, y = y)
+
+
   #check if start and (if applicable) end dates are actually dates
   #--- TO DO : Very loose, makes too many assumptions. Attend to more closely ---
   if(!class(date_tmp[,start]) %in% c("Date")){
@@ -54,8 +56,8 @@ render_timeline<-function(...){
   if(is.na(end)){
     gg_chart<- ggplot(data=date_tmp)+
       geom_point(aes_val)+
-      theme_bw()+
-      theme(axis.text.y = element_blank())
+      theme_bw()#+
+      #theme(axis.text.y = element_blank())
   }else{
     #assumes there is only one point defined per item (start or end)
     df_point<-date_tmp %>% dplyr::filter(is.na(!!sym(end)) | is.na(!!sym(end)))
@@ -66,8 +68,14 @@ render_timeline<-function(...){
     gg_chart<- ggplot()+
       geom_point(data = df_point,aes_val)+
       geom_segment(data = df_range,aes_val)+
-      theme_bw()+
-      theme(axis.text.y = element_blank())
+      theme_bw()#+
+      #theme(axis.text.y = element_blank())
+  }
+
+  if(!is.na(y) && class(data[,y]) %in% c("character","factor")){
+    if(length(unique(data[,y])) > 50){
+      rm_y_labels<-TRUE
+    }
   }
 
   gg_chart<-common_stats_aesethetics(gg_chart,

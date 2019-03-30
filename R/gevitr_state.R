@@ -26,7 +26,7 @@ gevitr_env$lead_chart_types<-.lead_chart_types
 # --- These are external and exposed to the user ---
 .marks<-c("point","line","area","text")
 .pos_channels<-c("x","y","lat","long","date","start_date","end_date")
-.ret_channels<-c("color","size","shape","alpha")
+.ret_channels<-c("color","size","shape","alpha","fill")
 
 .mark_specific_channels<-sapply(.marks,function(x,chan){
   sapply(chan,function(y,x){

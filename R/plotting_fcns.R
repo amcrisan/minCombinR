@@ -190,7 +190,7 @@ plot_small_multiples <- function(...) {
       all_plots[[grpItem]]<-do.call(plot_simple,args=spec_list,envir = parent.frame())
     }
 
-    combo_plots<-arrange_plots(all_plots)
+    combo_plots<-arrange_plots(all_plots,combo_type="small_multiple")
   }else{
     #For non-tabular data types, you must provide some additional metadata
     if(is.null(metadata)){
@@ -223,7 +223,7 @@ plot_small_multiples <- function(...) {
       #just call a simple plot
       all_plots[[grpItem]]<-do.call(plot_simple,args=spec_list,envir = parent.frame())
     }
-    combo_plots<-arrange_plots(all_plots)
+    combo_plots<-arrange_plots(all_plots,combo_type="small_multiple")
   }
   return(combo_plots)
 }
@@ -250,6 +250,14 @@ plot_composite<-function(...){
   #Make sure that all chart co-ordinates are flipped to match
   #the lead chart - this will depend upon alignment direction
   #default is horizontal (align all the y-axis)
+
+  #this is soley for a weird gevitrec call..
+  #for some reason, the common var is established
+  #within mincombinr, but not for gevitRec..
+  #temporary back stop until error is found
+  #within minCombinR this will never be null
+  if(is.null(spec_list$common_var)){spec_list$common_var<- "gevitR_checkID"}
+
 
   if(!is.null(spec_list$alignment)){
     align_dir<-ifelse(tolower(spec_list$alignment) %in% c("h","v"),
@@ -372,10 +380,10 @@ plot_composite<-function(...){
 
      #remove axis labels
       if(align_dir == "h"){
-          baseSpecs$rm_y_labels<-TRUE
-       }else{
-         baseSpecs$rm_x_labels<-TRUE
-       }
+         baseSpecs$rm_y_labels<-TRUE
+      }else{
+        baseSpecs$rm_x_labels<-TRUE
+      }
 
      #shrink plot margins on all combinations
      baseSpecs$shrink_plot_margin <-TRUE
@@ -389,7 +397,7 @@ plot_composite<-function(...){
   }
 
   #return the composite plot
-  combo_plots<-arrange_plots(chart_list = all_plots,align_dir = align_dir)
+  combo_plots<-arrange_plots(chart_list = all_plots,align_dir = align_dir,combo_type="spatially_aligned")
 
   return(combo_plots)
 
@@ -406,7 +414,7 @@ plot_many_linked<-function(...){
     all_plots[[spec_name]]<-do.call(plot_simple,args=baseSpecs,envir = parent.frame())
   }
 
-  combo_plots<-arrange_plots(all_plots)
+  combo_plots<-arrange_plots(all_plots,combo_type="color_aligned")
 
   return(combo_plots)
 
@@ -415,7 +423,7 @@ plot_many_linked<-function(...){
 #'Helper function to arrange plots for displaying
 #'@title arrange_plots
 #'@param chart_list A list of charts
-arrange_plots <- function(chart_list, labels = NULL,align_dir=NULL, ...) {
+arrange_plots <- function(chart_list, labels = NULL,align_dir=NULL, combo_type=NULL) {
 
   chart_list <- lapply(chart_list, function(chart) {
     chart<-if("list" %in% class(chart)) chart[[1]] else chart
@@ -435,17 +443,24 @@ arrange_plots <- function(chart_list, labels = NULL,align_dir=NULL, ...) {
     }
   })
 
+  if(!is.null(combo_type)){
+    if(combo_type == "color_aligned"){
+      for(i in 1:(length(chart_list)-1)){
+        chart_list[[i]]<-chart_list[[i]]+theme(legend.position="none")
+      }
+    }
+  }
 
 
   #NOTES: in order to add a shared legend, pass in shared_legend = TRUE in the ...
   if(!is.null(align_dir)){
     if(align_dir == "h"){
-      combo<-cowplot::plot_grid(plotlist = chart_list, labels = labels, nrow=1,align  = "h",scale=0.97,...)
+      combo<-cowplot::plot_grid(plotlist = chart_list, labels = labels, nrow=1,align  = "h",scale=0.97)
     }else if(algin_dir == "v"){
-      combo<-cowplot::plot_grid(plotlist = chart_list, ncol=1,labels = labels, align="v",...)
+      combo<-cowplot::plot_grid(plotlist = chart_list, ncol=1,labels = labels, align="v")
     }
   }else{
-    combo<-cowplot::plot_grid(plotlist = chart_list,labels = labels,...)
+    combo<-cowplot::plot_grid(plotlist = chart_list,labels = labels)
   }
 
   return(combo)

@@ -1,0 +1,127 @@
+---
+title: "Synthetic_Data"
+author: "Anamaria Crisan"
+date: '2019-03-27'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+devtools::load_all() #temporary once things are done
+library(dplyr)
+library(shiny)
+
+library(treeio)
+
+tree_dat<-input_data(file = system.file("extdata", "sample.nwk", package="treeio"), 
+                     dataType = "tree")
+
+genomic_dat<-input_data(file = system.file("extdata", "synth.fasta", package = "mincombinr"),
+                        dataType = "dna")
+
+gel_img <- input_data(file = system.file("extdata", "synth_gel_image.tiff", package = "mincombinr"),
+                           dataType = "image")
+
+
+id<-tree_dat@data$tipData
+
+tab_dat<-data.frame(sample_id= id,
+                    suscept_status= sample(c("susceptible","resistant"),replace =TRUE,size=length(id)),
+                    location = sample(c("School","Community Centre","Hospital"),replace=TRUE,size=length(id)),
+                    age = sample(25:80,replace=FALSE,size=length(id)),
+                    exposure = sample(c("food","animal","person","unknown"),replace =TRUE,size=length(id)))
+
+sample_date<-c()
+sympt_date<-c()
+for(i in 1:13){
+  tmp<-paste(2017,
+        sample(1:12,1),
+        sample(1:27,1),sep="-")
+  sample_date<-c(sample_date,tmp)
+  sympt_date<-c(sympt_date,as.character(as.Date(tmp)+sample(1:50,1)))
+  
+}
+
+tab_dat$sample_date<-as.Date(sample_date)
+tab_dat$sympt_date<-as.Date(sympt_date)
+
+```
+
+#Some Single Charts
+```{r, fig.height=3,fig.width=3,unit="in"}
+phyloTree_chart <- specify_single(chart_type = "phylogenetic tree", data = "tree_dat")
+plot(phyloTree_chart)
+```
+
+```{r}
+timeline_chart <- specify_single(chart_type = "timeline", 
+                               data = "tab_dat", 
+                               start = "sample_date", 
+                               end ="sympt_date", 
+                               y = "sample_id")
+plot(timeline_chart)
+```
+
+```{r}
+scatter_chart <- specify_single(chart_type = "scatter", data = "tab_dat", x = "sample_id", y = "suscept_status")
+plot(scatter_chart)
+```
+
+#Combinations
+
+```{r sm}
+tree_dat_2<-tree_dat
+tree_dat_2@data$metadata<-tab_dat
+
+phyloTree_chart_2 <- specify_single(chart_type = "phylogenetic tree", data = "tree_dat_2")
+
+sm_combo_tree <- specify_combination(combo_type = "small_multiple",
+                                     base_charts = "phyloTree_chart_2",
+                                     facet_by = "exposure")
+plot(sm_combo_tree)
+```
+
+```{r sm, fig.height=5,fig,width=10,unit="in"}
+composite_combo <- specify_combination(combo_type = "spatial_aligned",
+                                       base_charts = c("phyloTree_chart","scatter_chart","timeline_chart"))
+
+plot(composite_combo)
+```
+
+```{r}
+mg_combo <- specify_combination(combo_type = "unaligned",
+                                       base_charts = c("phyloTree_chart","scatter_chart","timeline_chart"))
+
+plot(mg_combo)
+```
+
+```{r}
+cl_combo <- specify_combination(combo_type = "color_aligned",
+                                       base_charts = c("phyloTree_chart_2","scatter_chart","timeline_chart"),
+                                link_by = "exposure")
+
+plot(cl_combo)
+```
+
+```{r imageannote,eval=FALSE}
+gel_img<-annotate_image(gel_img)
+tmp<-gel_img@data$metadata #not sure why I had to do this
+save(tmp,file="../extdata/syn_gel_image_meta.rds")
+```
+
+```{r image_view}
+load(file="../extdata/syn_gel_image_meta.rds")
+meta_img<-inner_join(gel_img@data$metadata,tab_dat,by=c("element_name" = "sample_id"))
+gel_img@data$metadata<-meta_img
+
+image_spec<-specify_single(chart_type="image",data="gel_img",color="exposure")
+plot(image_spec)
+```
+
+```{r teaser}
+image_spec<-specify_single(chart_type="image",data="gel_img")
+scatter_spec<-specify_single(chart_type="scatter",data="tab_dat",x="age",y="location")
+
+color_combo<-specify_combination(combo_type = "color_aligned",base_charts = c("phyloTree_chart_2","timeline_chart","scatter_spec","image_spec"),link_by="exposure")
+
+plot(color_combo)
+```

@@ -205,5 +205,8 @@ render_alignment<-function(...){
                                      shrink_plot_margin = shrink_plot_margin)
 
 
+  #odd rest
+  rm_y_labels<-FALSE
+  rm_x_labels<-FALSE
   return(gg_chart)
 }

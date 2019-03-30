@@ -17,8 +17,8 @@ render_heatmap <- function(...) {
   }
 
   gg_chart <- ggplot(data, aes_string(x, y, fill = color)) +
-    geom_tile() +
-    theme(legend.position="bottom")
+    geom_tile()+
+    scale_fill_gradient(low = "white",high="black")
 
   #To scale colour (called from many_types_linked and small_multiple)
   if (!is.na(colour_scale)[1]) {
