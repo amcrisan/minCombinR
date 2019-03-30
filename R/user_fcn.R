@@ -471,7 +471,7 @@ plot.gevitSpec<-function(specs = NULL,do_not_display=FALSE){
     #instead of just making a simple specification, the user wants a combination
 
     # ------- Unaligned  ------
-    #"Many types genera"l means you just want to put a bunch of plots together
+    #"Many types general means you just want to put a bunch of plots together
     #and they are not spatially or visually linked in any way
     if (specs$combo_type == "unaligned") {
       base_specs<-c()

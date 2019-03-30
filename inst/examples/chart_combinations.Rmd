@@ -160,9 +160,9 @@ plot(color_combo)
 
 *This example will work without any errors*
 ```{r composite_no_error,message=FALSE,warning=FALSE}
-scatter_chart <- specify_single(chart_type = "scatter", data = "tab_dat", x = "month", y = "site.id")
+scatter_chart <- specify_single(chart_type = "scatter", data = "tab_dat", x = "month", y = "site_id")
 scatter_chart_two <- specify_single(chart_type = "scatter", data = "tab_dat", x = "country", 
-                                  y = "site.id", title = "Cases by country")
+                                  y = "site_id", title = "Cases by country")
 
 spatial_aligned_combo <- specify_combination(combo_type = "spatial_aligned",
                                        base_charts = c("phyloTree_chart","scatter_chart","scatter_chart_two"))
@@ -190,7 +190,7 @@ plot(spatial_aligned_combo)
 Let's try combining a phylogenetic tree, bar chart, and scatter chart
 ```{r}
 # Specifications
-bar_alt <- specify_single(chart_type = "bar", data = "tab_dat", x = "site.id", y = "month", rm_x_label=TRUE)
+bar_alt <- specify_single(chart_type = "bar", data = "tab_dat", x = "site_id", y = "month", rm_x_label=TRUE)
 
 spatial_aligned_combo <- specify_combination(combo_type = "spatial_aligned",
                                        base_charts = c("phyloTree_chart", "bar_alt", "scatter_chart_two"))
@@ -241,7 +241,7 @@ timeline_chart <- specify_single(chart_type = "timeline",
                                data="time_dat",
                                start = "collection_date",
                                end ="collection_date_end", 
-                               y = "site.id",
+                               y = "site_id",
                                title="Timeline")
 
 spatial_aligned_combo <- specify_combination(combo_type = "spatial_aligned", 
@@ -249,7 +249,10 @@ spatial_aligned_combo <- specify_combination(combo_type = "spatial_aligned",
                                                        "scatter_chart_two",
                                                        "timeline_chart",
                                                        "genome_chart"))
-# Plot
+
+spatial_aligned_combo <- specify_combination(combo_type = "spatial_aligned", 
+                                       base_charts = c("phyloTree_chart",
+                                                       "genome_chart"))
 plot(spatial_aligned_combo)
 
 ```

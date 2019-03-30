@@ -524,12 +524,12 @@ common_stats_aesethetics<-function(gg_chart=NA,
                                    y_breaks = FALSE,
                                    shrink_plot_margin=FALSE){
 
-  print(rm_x_labels)
   if(!is.na(title)) {
     gg_chart <- gg_chart + ggtitle(title)
   }
 
 
+  print(flip_coord)
   if(flip_coord) {
     gg_chart <- gg_chart + coord_flip()
   }
