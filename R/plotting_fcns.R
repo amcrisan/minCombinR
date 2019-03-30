@@ -182,7 +182,9 @@ plot_small_multiples <- function(...) {
     facet_var<-spec_list$facet_by
 
     all_plots<-c()
-    for(grpItem in unique(data[,facet_var])){
+
+    for(grpItem in as.character(unique(data[,facet_var]))){
+
       tmp<-data %>% dplyr::filter_(.dots = paste0(facet_var, "=='", grpItem, "'"))
 
       spec_list$data<-tmp
@@ -314,7 +316,7 @@ plot_composite<-function(...){
     leadChart_baseSpecs<-flip_coord<-TRUE
   }
 
-  all_plots[[leadChart]]<-list(plotItem = do.call(plot_simple,args=leadChart_baseSpecs,envir = parent.frame()))
+  all_plots[[leadChart]]<-list(plotItem = do.call(plot_simple,args=leadChart_baseSpecs,envir = environment()))
   lead_axis_info<-get_axis_info(all_plots[[leadChart]]$plotItem,align = align_dir)
 
 
@@ -411,7 +413,8 @@ plot_many_linked<-function(...){
   for(spec_name in spec_list$base_charts){
     baseSpecs<-get(spec_name,envir = globalenv())
     baseSpecs$color<-spec_list$link_by
-    all_plots[[spec_name]]<-do.call(plot_simple,args=baseSpecs,envir = parent.frame())
+
+    all_plots[[spec_name]]<-do.call(plot_simple,args=baseSpecs,envir = environment())
   }
 
   combo_plots<-arrange_plots(all_plots,combo_type="color_aligned")
@@ -424,23 +427,22 @@ plot_many_linked<-function(...){
 #'@title arrange_plots
 #'@param chart_list A list of charts
 arrange_plots <- function(chart_list, labels = NULL,align_dir=NULL, combo_type=NULL) {
-
   chart_list <- lapply(chart_list, function(chart) {
     chart<-if("list" %in% class(chart)) chart[[1]] else chart
     chart_class<-class(chart)
-
-    if ('ggtree' %in% chart_class) {
-      cowplot::plot_to_gtable(chart)
-    } else if('gg' %in% chart_class) {
-      cowplot::plot_to_gtable(chart)
-      # ggplotify::as.grob(chart)
-    } else if ('data.frame' %in% chart_class){
-      multipanelfigure::capture_base_plot(chart)
-    } else if ('htmlwidget' %in% chart_class) {
-      grid::grid.grabExpr(print(chart))
-    } else {
-      chart
-    }
+    chart
+    # if ('ggtree' %in% chart_class) {
+    #   cowplot::plot_to_gtable(chart)
+    # } else if('gg' %in% chart_class) {
+    #   cowplot::plot_to_gtable(chart)
+    #   # ggplotify::as.grob(chart)
+    # } else if ('data.frame' %in% chart_class){
+    #   multipanelfigure::capture_base_plot(chart)
+    # } else if ('htmlwidget' %in% chart_class) {
+    #   grid::grid.grabExpr(print(chart))
+    # } else {
+    #   chart
+    # }
   })
 
   if(!is.null(combo_type)){

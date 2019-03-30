@@ -493,7 +493,6 @@ plot.gevitSpec<-function(specs = NULL,do_not_display=FALSE){
 
       #append the specifications for the chart to the specifications for the combination
       base_specs<-append(base_specs,specs)
-
       spec_plot<-do.call(plot_small_multiples,args = base_specs,envir = parent.frame())
     }
 
