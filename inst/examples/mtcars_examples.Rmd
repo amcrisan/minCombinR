@@ -133,18 +133,39 @@ plot(color_combo)
 ```{r comp_mtcars}
 
 # This is the closest I have to working so far!
-
 # Table data
 mtcars_dat <- input_data(file = system.file("extdata", "mtcars.csv", package = "mincombinr"), 
                          dataType = "table")
+
 scatter_chart <- specify_base(chart_type = "scatter", data = "mtcars_dat", x = "wt", y = "am")
-scatter_chart_two <- specify_base(chart_type = "scatter", data = "mtcars_dat", x = "wt", 
-                                  y = "am")
+
+scatter_chart_two <- specify_base(chart_type = "scatter", data = "mtcars_dat", x = "wt", y = "am")
+
 bar_alt <- specify_base(chart_type = "bar", data = "mtcars_dat", x = "am", y = "wt", rm_x_label=TRUE)
 
 composite_combo <- specify_combination(combo_type = "composite",
                                        base_charts = c("bar_alt", "scatter_chart", "scatter_chart_two"))
 
+plot(composite_combo)
+
+
+#This outputs empty charts because the rows are being removed
+# Specify bar chart:
+bar_chart <- specify_base(chart_type = "bar", data = "mtcars_dat", x = "am", y = "mpg")
+plot(bar_chart)
+
+# Specify box plot:
+boxplot_chart <- specify_base(chart_type = "boxplot", data = "mtcars_dat", x = "am", y = "mpg")
+plot(boxplot_chart)
+
+# Scatter plot:
+scatter_chart <- specify_base(chart_type = "scatter", data = "mtcars_dat", x = "hp", y = "mpg")
+plot(scatter_chart)
+
+composite_combo <- specify_combination(combo_type = "composite",
+                                       base_charts = c("bar_chart", "boxplot_chart", "scatter_chart"))
+
+# Plot
 plot(composite_combo)
 
 ```
