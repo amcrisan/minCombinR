@@ -13,7 +13,7 @@ output:
 This document demonstrates how to implement and plot different chart types using minCombinR. This document assumes that you have already run the "Getting started with minCombinR" and that the necessary data has already been loaded into your R workspace.
 
 ```{r, message=FALSE, warning=FALSE}
-devtools::load_all() #temporary once things are done
+devtools::load_all() # TODO: temporary once things are done
 library(dplyr)
 library(shiny)
 

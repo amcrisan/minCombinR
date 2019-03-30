@@ -1,0 +1,150 @@
+---
+title: "Examples Using mtcars"
+author: "Shannah Fisher"
+date: "2019-03-27"
+output: html_document
+---
+
+This document demonstrates how to implement and plot different chart types and chart combinations using minCombinR. It will be using the classic tabular mtcars dataset that is built into R. This document assumes that you have already run the "Getting started with minCombinR".
+
+
+```{r setup, include = FALSE}
+
+devtools::load_all() # TODO: temporary once things are done
+library(dplyr)
+library(shiny)
+
+# Load in the mtcars dataset
+data(mtcars)
+
+# Let's first transform the "am" attribute from ordered to categorical:
+# This involves transforming all instances of 1/0 to "Automatic"/"Manual": 
+mtcars$am <- factor(mtcars$am, labels = c("Automatic", "Manual"))
+mtcars$carb <- factor(mtcars$carb)
+
+```
+
+## Common statistical charts
+
+```{r common_stats_mtcars, message = FALSE, warning = FALSE, fig.height = 2, fig.width = 2, units = "in"}
+
+# Let's specify and plot some single charts.
+
+# Bar chart:
+bar_chart <- specify_base(chart_type = "bar", data = "mtcars", x = "am")
+plot(bar_chart)
+
+# Line chart:
+line_chart <- specify_base(chart_type = "line", data = "mtcars", x = "mpg", y = "hp")
+plot(line_chart)
+
+# Scatter plot:
+scatter_chart <- specify_base(chart_type = "scatter", data = "mtcars", x = "mpg", y = "hp")
+plot(scatter_chart)
+
+# Histogram:
+histogram_chart <- specify_base(chart_type = "histogram", data = "mtcars", x = "mpg")
+plot(histogram_chart)
+
+# Probability Density Function (PDF) plot:
+pdf_chart <- specify_base(chart_type = "pdf", data = "mtcars", x = "wt")
+plot(pdf_chart)
+
+# Boxplot:
+boxplot_chart <- specify_base(chart_type = "boxplot", data = "mtcars", x = "am", y = "hp")
+plot(boxplot_chart)
+
+# Swarm plot:
+swarmplot_chart <- specify_base(chart_type = "swarmplot", data = "mtcars", x = "am", y = "mpg")
+plot(swarmplot_chart)
+
+# We'll even let you make a pie chart:
+pie_chart <- specify_base(chart_type = "pie", data = "mtcars", x = "carb")
+plot(pie_chart)
+
+```
+
+## Combinations
+
+### Many Types General
+Many types general can be used when you just want to put a bunch of plots together and there are no spatial or visual linkages between the plots themselves.
+
+```{r many_types_general_mtcars, message=FALSE, warning=FALSE}
+
+# Specify that you want to combine the bar_chart, box plot, scatter_chart and swarmplot_chart
+mg_combo <- specify_combination(combo_type = "many_types_general", 
+                                base_charts = c("bar_chart","boxplot_chart","scatter_chart", "swarmplot_chart"))
+# Now plot it!
+plot(mg_combo)
+```
+
+### Small Multiples
+Small multiple charts are visually linked because they show the same underlying chart type while showing different subsets of the data. Another common name for this is facets.
+
+
+```{r small_multiples_mtcars, message=FALSE, warning=FALSE}
+# Specify the base chart type with all of the data that you wish to use:
+scatter_chart <- specify_base(chart_type = "scatter", data = "mtcars", x = "mpg", y = "hp")
+
+# Now specify the small multiple combination
+sm_combo_scatter <- specify_combination(combo_type = "small_multiple", 
+                                        base_charts = "scatter_chart", 
+                                        facet_by = "am")
+plot(sm_combo_scatter)
+
+
+# Let's try it again with a box plot:
+# We will use the boxplot_chart specification that we made earlier
+
+# We will make the engine attribute a categorical variable (either V-shaped or Straight) so we can facet using this variable.
+mtcars$vs <- factor(mtcars$vs, labels = c("V-shaped", "Straight"))
+
+# Now specify the combination
+sm_combo_boxplot <- specify_combination(combo_type = "small_multiple", 
+                                        base_charts = "boxplot_chart",
+                                        facet_by = "vs")
+# And plot!
+plot(sm_combo_boxplot)
+
+```
+### Color Linked Combinations
+
+It could be interesting to link several different chart types together by color.  
+
+If you have nontabular data, minCombinR will find matching links between non-tabular and tabular data so they can be color aligned. Mtcars is a tabular dataset, so we won't be demonstrating this here but if you are interested, check out the examples using the ebola dataset that can be found in the inst/examples folder in the r markdown notebook called chart_combinations. 
+
+```{r color_linked_mtcars, message=FALSE, warning=FALSE}
+# Specify the line chart and the scatter chart that we want to combine
+my_scatter_chart <- specify_base(chart_type = "scatter", data = "mtcars", x = "hp", y = "mpg")
+my_bar_chart <- specify_base(chart_type = "bar", data = "mtcars", x = "carb")
+plot(my_scatter_chart)
+plot(my_bar_chart)
+
+# Specify that you want to combine with color
+color_combo <- specify_combination(combo_type = "color_linked", 
+                                   base_charts = c("my_scatter_chart", "my_bar_chart"),
+                                   link_by = "am")
+# Now plot!
+plot(color_combo)
+```
+
+### Composite Spatially Aligned Combinations
+
+```{r comp_mtcars}
+
+# This is the closest I have to working so far!
+
+# Table data
+mtcars_dat <- input_data(file = system.file("extdata", "mtcars.csv", package = "mincombinr"), 
+                         dataType = "table")
+scatter_chart <- specify_base(chart_type = "scatter", data = "mtcars_dat", x = "wt", y = "am")
+scatter_chart_two <- specify_base(chart_type = "scatter", data = "mtcars_dat", x = "wt", 
+                                  y = "am")
+bar_alt <- specify_base(chart_type = "bar", data = "mtcars_dat", x = "am", y = "wt", rm_x_label=TRUE)
+
+composite_combo <- specify_combination(combo_type = "composite",
+                                       base_charts = c("bar_alt", "scatter_chart", "scatter_chart_two"))
+
+plot(composite_combo)
+
+```
