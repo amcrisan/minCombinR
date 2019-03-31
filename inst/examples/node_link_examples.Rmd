@@ -1,0 +1,42 @@
+---
+title: "Node Link Examples"
+author: "Shannah Fisher"
+date: "2019/03/30"
+output: html_document
+---
+
+This document demonstrates how to implement and plot a node link chart using minCombinR. This document assumes that you have already run the "Getting started with minCombinR".
+
+
+```{r setup, include = FALSE}
+
+devtools::load_all() # TODO: temporary once things are done
+library(dplyr)
+library(shiny)
+
+# Data was found in r-graph-gallery:
+links_data <- data.frame(
+  source = c("A","A", "A", "A", "A", "J", "B", "B", "C", "C", "D","I"),
+  target = c("B","B", "C", "D", "J","A","E", "F", "G", "H", "I","I")
+)
+
+highschool_dat <- ggraph::highschool
+```
+
+## Node Link Chart
+
+```{r common_stats_mtcars, message = FALSE, warning = FALSE, fig.height = 2, fig.width = 2, units = "in"}  
+# Specify that we would like a node link graph
+node_link <- specify_single(chart_type = "node-link", data = "links_data")
+# And plot!
+plot(node_link)
+```
+
+```{r common_stats_mtcars, message = FALSE, warning = FALSE, fig.height = 2, fig.width = 2, units = "in"}  
+
+# Specify that we would like a node link graph using the highschool dataset
+node_link_chart <- specify_single(chart_type = "node-link", data = "highschool_dat")
+# And plot!
+plot(node_link_chart)
+```
+
