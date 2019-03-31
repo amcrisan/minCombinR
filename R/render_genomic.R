@@ -6,7 +6,7 @@
 #' @export
 #'
 #' @examples
-get_diff_pos<-function(dat){
+get_diff_pos<-function(dat,return_dna_bin=FALSE,maxn=NULL){
   if(!"gevitDataObj" %in% class(dat)){
     stop("This method only works for gevitR objects")
   }
@@ -22,7 +22,26 @@ get_diff_pos<-function(dat){
   diff<-apply(tmp,2,function(x){length(setdiff(unique(x),"n"))})
   tmp<-tmp[,which(diff>1)]
 
-  return(gsub("^X","",colnames(tmp)))
+  #maxn is literally for toy data only
+  #to make it easier to see some things
+  if(!is.null(maxn)){
+    tmp<-tmp[,c(1,sample(2:ncol(tmp),replace=FALSE,maxn))]
+  }
+
+  if(return_dna_bin){
+    item_names<-as.character(tmp[,1])
+    tmp<-tmp[,2:length(tmp)]
+    tmp<-as.matrix(tmp)
+    rownames(tmp)<-item_names
+    colnames(tmp)<-gsub("^X","",colnames(tmp))
+    tmp<-ape::as.DNAbin(tmp)
+
+    return(tmp)
+
+  }else{
+
+    return(gsub("^X","",colnames(tmp)))
+  }
 
 }
 
@@ -123,8 +142,13 @@ render_alignment<-function(...){
   }
 
   #convert dna bin to tidy data frame
-  tmp<-data.frame(t(bind_rows(as.character(data))),stringsAsFactors = FALSE) %>%
-    tibble::rownames_to_column(var = "idvar")
+  if(class(as.character(data)) == "matrix"){
+    tmp<-as.data.frame(as.character(data),stringsAsFactors = FALSE) %>%
+      tibble::rownames_to_column(var = "idvar")
+  }else{
+    tmp<-data.frame(t(bind_rows(as.character(data))),stringsAsFactors = FALSE) %>%
+      tibble::rownames_to_column(var = "idvar")
+  }
 
   n_seq<-nrow(tmp)
 
