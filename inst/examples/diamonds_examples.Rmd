@@ -20,6 +20,8 @@ data(diamonds)
 
 # Here is what the diamonds dataset looks like (first 6 rows):
 head(diamonds)
+
+diamonds<-as.data.frame(diamonds)
 ```
 
 ## Common statistical charts
@@ -85,12 +87,12 @@ Small multiple charts are visually linked because they show the same underlying 
 ```{r small_multiples_diamonds, message=FALSE, warning=FALSE}
 
 # Scatter plot:
-scatter_chart_tp <- specify_single(chart_type = "scatter", data = "diamonds", x = "table", y = "price")
+scatter_chart_tp <- specify_single(chart_type = "boxplot", data = "diamonds", x = "clarity", y = "price")
 
 # Now specify the small multiple combination
 sm_combo_scatter <- specify_combination(combo_type = "small_multiple", 
                                         base_charts = "scatter_chart_tp", 
-                                        facet_by = "color")
+                                        facet_by = "cut")
 plot(sm_combo_scatter)
 
 
@@ -125,6 +127,6 @@ plot(scatter_chart)
 scatter_chart3 <- specify_single(chart_type = "scatter", data = "diamonds", x = "carat", y = "price")
 plot(scatter_chart)
 
-spatial_aligned_combo <- specify_combination("spatial_aligned", c("scatter_chart1", "scatter_chart2", "scatter_chart3"))
-plot(spatial_aligned_combo)
+composite_combo <- specify_combination("spatial_aligned", c("scatter_chart1", "scatter_chart2", "scatter_chart3"))
+plot(composite_combo)
 ```

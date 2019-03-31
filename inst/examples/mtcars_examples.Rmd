@@ -22,6 +22,9 @@ data(mtcars)
 mtcars$am <- factor(mtcars$am, labels = c("Automatic", "Manual"))
 mtcars$carb <- factor(mtcars$carb)
 
+#add names of cars, make it more interesting
+mtcars$brand<-sapply(rownames(mtcars),function(x){strsplit(x,"\\s+")[[1]][1]}) %>% unname()
+
 ```
 
 ## Common statistical charts
@@ -83,16 +86,6 @@ Small multiple charts are visually linked because they show the same underlying 
 
 
 ```{r small_multiples_mtcars, message=FALSE, warning=FALSE}
-# Specify the base chart type with all of the data that you wish to use:
-scatter_chart <- specify_single(chart_type = "scatter", data = "mtcars", x = "mpg", y = "hp")
-
-# Now specify the small multiple combination
-sm_combo_scatter <- specify_combination(combo_type = "small_multiple", 
-                                        base_charts = "scatter_chart", 
-                                        facet_by = "am")
-plot(sm_combo_scatter)
-
-
 # Let's try it again with a box plot:
 # We will use the boxplot_chart specification that we made earlier
 
@@ -118,6 +111,9 @@ If you have nontabular data, minCombinR will find matching links between non-tab
 my_scatter_chart <- specify_single(chart_type = "scatter", data = "mtcars", x = "hp", y = "mpg")
 my_bar_chart <- specify_single(chart_type = "bar", data = "mtcars", x = "carb")
 
+plot(my_scatter_chart)
+plot(my_bar_chart)
+
 # Specify that you want to combine with color
 color_combo <- specify_combination(combo_type = "color_aligned", 
                                    base_charts = c("my_scatter_chart", "my_bar_chart"),
@@ -129,19 +125,13 @@ plot(color_combo)
 ### Spatially Aligned Combinations
 
 ```{r comp_mtcars}
-
-# This is the closest I have to working so far!
 # Table data
-mtcars_dat <- input_data(file = system.file("extdata", "mtcars.csv", package = "mincombinr"), 
-                         dataType = "table")
+scatter_chart <- specify_single(chart_type = "scatter", data = "mtcars", x = "wt", y = "brand")
+scatter_chart_two <- specify_single(chart_type = "scatter", data = "mtcars", x = "wt", 
+                                  y = "brand")
+bar_alt <- specify_single(chart_type = "bar", data = "mtcars", x = "brand", y = "wt", rm_x_label=TRUE)
 
-scatter_chart <- specify_single(chart_type = "scatter", data = "mtcars_dat", x = "wt", y = "am")
-
-scatter_chart_two <- specify_single(chart_type = "scatter", data = "mtcars_dat", x = "wt", y = "am")
-
-bar_alt <- specify_single(chart_type = "bar", data = "mtcars_dat", x = "am", y = "wt", rm_x_label=TRUE)
-
-spatial_aligned_combo <- specify_combination(combo_type = "spatial_aligned",
+composite_combo <- specify_combination(combo_type = "spatial_aligned",
                                        base_charts = c("bar_alt", "scatter_chart", "scatter_chart_two"))
 
 plot(spatial_aligned_combo)

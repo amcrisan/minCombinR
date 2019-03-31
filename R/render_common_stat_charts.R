@@ -267,11 +267,18 @@ render_scatter <- function(...) {
   # }
 
 
-
   if(class(data[,x]) %in% c("character","factor")){
     if(length(unique(data[,x])) > 50){
       rm_x_labels<-TRUE
     }
+  }
+
+  result <- tryCatch({
+    data[,y]
+  }, error = function(e){return(NULL)})
+
+  if(is.null(result)){
+    browser()
   }
 
   if(class(data[,y]) %in% c("character","factor")){
