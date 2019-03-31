@@ -16,25 +16,28 @@ render_node_link <- function(...) {
     data<-get(data,envir = globalenv())  #get data from the global environment
   }
 
-  my_graph <- igraph::graph_from_data_frame(d = data, directed = directed)
+  # TODO: I removed the directed parameter for now - might want to add back
+  # my_graph <- igraph::graph_from_data_frame(d = data, directed = directed)
+  my_graph <- igraph::graph_from_data_frame(d = data)
   graph_chart <- ggraph::ggraph(my_graph, layout = "kk") + ggraph::geom_edge_link() + ggraph::geom_node_point()
 
-  if (!is.na(edge_col_var)) {
-    if (is.na(edge_col_palette)) {
-      colours <- get_colour_palette(data, edge_col_var)
-    } else {
-      colours <- edge_col_palette
-    }
-
-    graph_chart <- graph_chart %+%
-      ggraph::geom_edge_link(aes_string(color = edge_col_var)) %+%
-      ggraph::scale_edge_colour_manual(name = edge_col_var, values = colours)
-  }
-
-  if (!is.na(node_col_var)) {
-    graph_chart <-
-      graph_chart %+% ggraph::geom_node_point(aes(color = node_col_var))
-  }
+  # TODO: Convert this into the new parameters (color, color lines and color point)
+  # if (!is.na(edge_col_var)) {
+  #   if (is.na(edge_col_palette)) {
+  #     colours <- get_colour_palette(data, edge_col_var)
+  #   } else {
+  #     colours <- edge_col_palette
+  #   }
+  #
+  #   graph_chart <- graph_chart %+%
+  #     ggraph::geom_edge_link(aes_string(color = edge_col_var)) %+%
+  #     ggraph::scale_edge_colour_manual(name = edge_col_var, values = colours)
+  # }
+  #
+  # if (!is.na(node_col_var)) {
+  #   graph_chart <-
+  #     graph_chart %+% ggraph::geom_node_point(aes(color = node_col_var))
+  # }
 
   return(graph_chart)
 }

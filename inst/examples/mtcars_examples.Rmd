@@ -69,10 +69,10 @@ plot(pie_chart)
 
 ## Combinations
 
-### Many Types General
-Many types general can be used when you just want to put a bunch of plots together and there are no spatial or visual linkages between the plots themselves.
+### Unaligned
+Unaligned combinations can be used when you just want to put a bunch of plots together and there are no spatial or visual linkages between the plots themselves.
 
-```{r many_types_general_mtcars, message=FALSE, warning=FALSE}
+```{r unaligned_mtcars, message=FALSE, warning=FALSE}
 
 # Specify that you want to combine the bar_chart, box plot, scatter_chart and swarmplot_chart
 mg_combo <- specify_combination(combo_type = "unaligned", 
@@ -100,13 +100,13 @@ sm_combo_boxplot <- specify_combination(combo_type = "small_multiple",
 plot(sm_combo_boxplot)
 
 ```
-### Color Linked Combinations
+### Color Aligned Combinations
 
 It could be interesting to link several different chart types together by color.  
 
 If you have nontabular data, minCombinR will find matching links between non-tabular and tabular data so they can be color aligned. Mtcars is a tabular dataset, so we won't be demonstrating this here but if you are interested, check out the examples using the ebola dataset that can be found in the inst/examples folder in the r markdown notebook called chart_combinations. 
 
-```{r color_linked_mtcars, message=FALSE, warning=FALSE}
+```{r color_aligned_mtcars, message=FALSE, warning=FALSE}
 # Specify the line chart and the scatter chart that we want to combine
 my_scatter_chart <- specify_single(chart_type = "scatter", data = "mtcars", x = "hp", y = "mpg")
 my_bar_chart <- specify_single(chart_type = "bar", data = "mtcars", x = "carb")
@@ -122,7 +122,7 @@ color_combo <- specify_combination(combo_type = "color_aligned",
 plot(color_combo)
 ```
 
-### Composite Spatially Aligned Combinations
+### Spatially Aligned Combinations
 
 ```{r comp_mtcars}
 # Table data
@@ -134,6 +134,41 @@ bar_alt <- specify_single(chart_type = "bar", data = "mtcars", x = "brand", y = 
 composite_combo <- specify_combination(combo_type = "spatial_aligned",
                                        base_charts = c("bar_alt", "scatter_chart", "scatter_chart_two"))
 
-plot(composite_combo)
+plot(spatial_aligned_combo)
+```
+
+## ERRORS
+```{r}
+
+# ERROR #1: Empty Plots
+
+#This outputs empty charts because the rows are being removed
+# Specify bar chart:
+bar_chart <- specify_single(chart_type = "bar", data = "mtcars_dat", x = "am", y = "mpg")
+plot(bar_chart)
+
+# Specify box plot:
+boxplot_chart <- specify_single(chart_type = "boxplot", data = "mtcars_dat", x = "am", y = "mpg")
+plot(boxplot_chart)
+
+# Scatter plot:
+scatter_chart <- specify_single(chart_type = "scatter", data = "mtcars_dat", x = "hp", y = "mpg")
+plot(scatter_chart)
+
+spatial_aligned_combo2 <- specify_combination(combo_type = "spatial_aligned",
+                                       base_charts = c("bar_chart", "boxplot_chart", "scatter_chart"))
+
+# Plot
+plot(spatial_aligned_combo2)
+
+# Error #2:
+
+#This has error: Error in do.call(plot_simple, args = leadChart_baseSpecs, envir = parent.frame()) : second argument must be a list
+
+spatial_aligned_combo3 <- specify_combination(combo_type = "spatial_aligned",
+                                       base_charts = c("bar_chart", "boxplot_chart", "bar_alt"))
+
+# Plot
+plot(spatial_aligned_combo3)
 
 ```

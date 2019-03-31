@@ -68,10 +68,10 @@ plot(pie_chart)
 
 ## Combinations
 
-### Many Types General
-Many types general can be used when you just want to put a bunch of plots together and there are no spatial or visual linkages between the plots themselves.
+### Unaligned
+Unaligned combination can be used when you just want to put a bunch of plots together and there are no spatial or visual linkages between the plots themselves.
 
-```{r many_types_general_diamonds, message=FALSE, warning=FALSE}
+```{r unaligned_diamonds, message=FALSE, warning=FALSE}
 
 # Specify that you want to combine the bar_chart, box plot, scatter_chart and swarmplot_chart
 mg_combo <- specify_combination(combo_type = "unaligned", 
@@ -97,9 +97,9 @@ plot(sm_combo_scatter)
 
 
 ```
-### Color Linked Combinations
+### Color Aligned Combinations
 
-It could be interesting to link several different chart types together by color.  
+It could be interesting to align several different chart types together by color.  
 
 If you have nontabular data, minCombinR will find matching links between non-tabular and tabular data so they can be color aligned. Mtcars is a tabular dataset, so we won't be demonstrating this here but if you are interested, check out the examples using the ebola dataset that can be found in the inst/examples folder in the r markdown notebook called chart_combinations. 
 
@@ -113,7 +113,7 @@ color_combo <- specify_combination(combo_type = "color_aligned",
 plot(color_combo)
 ```
 
-### Composite Spatially Aligned Combinations
+### Spatially Aligned Combinations
 
 ```{r comp_mtcars}
 
