@@ -7,7 +7,6 @@ output:
     fig_width: 2
     fig_height: 2
     fig_caption: false
-    keep_tex: yes
 ---
 
 This document demonstrates how to implement and plot different chart types using minCombinR. This document assumes that you have already run the "Getting started with minCombinR" and that the necessary data has already been loaded into your R workspace.
@@ -121,28 +120,22 @@ plot(heatmap_chart)
 
 ```
 
-```{r D2_density_charts,message=FALSE,warning=FALSE,fig.height=2,fig.width=2,units="in"}
-
-# Density Chart:
-density_chart <- specify_single(chart_type = "density", data = "tab_dat", x = "latitude", y = "longitude")
-plot(density_chart)
-```
-
-Category stripes are not really meant to be stand alone chart types, they are generally meant to be enhancements, typically for phylogenetic trees, where adding a category stripe is a common paradigm.
-But it's possible to generate a category stripe on its own.
-
-```{r color_charts_two,message=FALSE,warning=FALSE,fig.height=2,fig.width=2,units="in",eval=FALSE}
-# TODO: ?
-# This doesn't quite work when there are a lot of labels
-# Maybe the answer here is just a 1D tile plot.
-cat_stripe_chart < -specify_single(chart_type = "heatmap", data = "tab_dat", y = "site.id", color = "bob", category = "country")
-plot(cat_stripe_chart)
-
-```
-
 ## Relational charts
 
-### TODO: NODE-LINK DIAGRAM
+These data do not have network data, so we'll make up so data to use.
+```{r, fig.height = 3, fig.width = 3,message=FALSE,warning=FALSE, units="in"}
+# Data was found in r-graph-gallery:
+links_data <- data.frame(
+  source = c("A","A", "A", "A", "A", "J", "B", "B", "C", "C", "D","I"),
+  target = c("B","B", "C", "D", "J","A","E", "F", "G", "H", "I","I")
+)
+
+highschool_dat <- ggraph::highschool
+
+node_link <- specify_single(chart_type = "node-link", data = "links_data")
+# And plot!
+plot(node_link)
+```
 
 ## Spatial charts
 
@@ -153,7 +146,7 @@ At a bare minimum, if you don't just want to draw the polygons of the shape file
 A lot of data does not, and it's not possible for minCombinR to fill in those gaps. 
 
 
-```{r metar_reconcile}
+```{r metar_reconcile,evla=FALSE}
 
 meta_tmp <- shape_dat@data$metadata
 geo <- shape_dat@data$geometry
@@ -206,7 +199,7 @@ plot(spatial_chart)
 Also, it possible just to see one individual map too, not just everything together
 
 Here's an example where we compute some new data and specify and plot the "Guinea" region
-```{r choro_2,message=FALSE,warning=FALSE,fig.height=4,fig.width=4,units="in",eval=FALSE}
+```{r choro_2,message=FALSE,warning=FALSE,fig.height=4,fig.width=4,units="in"}
 # Let's change things up a little bit and plot the incidence of things
 
 # You can change the metadata
@@ -225,7 +218,7 @@ plot(spatial_chart)
 
 Second, is working from a co-ordinates from a tabular data file. The background raster image is supplied by the 'Openstreemaps' package (and the broader project). They do great work, consider supporting them if you like this feature too.
 
-```{r map_charts,message=FALSE,warning=FALSE}
+```{r map_charts,message=FALSE,warning=FALSE,fig.height=4,fig.width=4,units="in"}
 # Geographic Map
 map_chart <- specify_single("geographic map", data = "tab_dat", lat = "latitude", long = "longitude", color = "year")
 plot(map_chart)
@@ -248,7 +241,7 @@ plot(genome_chart)
 ```
 
 We can also just look at the subset of the data, to make life a little bit easier.
-```{r genomic_map,message=FALSE,warning=FALSE,fig.height=5,fig.width=5,units="in"}
+```{r genomic_map_two,message=FALSE,warning=FALSE,fig.height=5,fig.width=5,units="in"}
 # Alignment
 diff_seq <- get_diff_pos(genomic_dat) 
 genome_chart <- specify_single(data = "genomic_dat", chart_type = "alignment",show_pos=diff_seq[1:20])
@@ -286,7 +279,7 @@ There are two times of timelines that can be created:
 1. A "gantt chart" type timeline that will show both ranges and single events.  
 2. A standard epidemic curve, which is essentially a very special case of a histogram or bar chart, depending upon the user.
 
-```{r}
+```{r,message=FALSE,warning=FALSE,fig.height=4,fig.width=4,units="in"}
 # Using the existing tabular data:
 tmp <- tab_dat@data[[1]]
 tmp$collection_date <- as.Date(tmp$collection_date)
@@ -305,7 +298,7 @@ timeline_chart <- specify_single(chart_type = "timeline",
                                data = "tmp", 
                                start = "collection_date", 
                                end ="collection_date_end", 
-                               y = "site.id")
+                               y = "site_id")
 plot(timeline_chart)
 ```
 
@@ -313,14 +306,14 @@ plot(timeline_chart)
 Since there's a lot going on, let's subset this to get a better view.  
 So here, only plotting those items that are ranges.
 
-```{r}
+```{r,message=FALSE,warning=FALSE,fig.height=4,fig.width=4,units="in"}
 tmp_sub <- dplyr::filter(tmp,!is.na(collection_date_end))
 
 timeline_chart <- specify_single(chart_type = "timeline",
                                data = "tmp_sub",
                                start = "collection_date", 
                                end = "collection_date_end", 
-                               y = "site.id", 
+                               y = "site_id", 
                                color = "country")
 plot(timeline_chart)
 ```
@@ -331,14 +324,14 @@ Getting image data to work is a little bit more involved because it requires som
 
 Here's a workflow with a few different types of images:
 
-```{r imageOne_one}
+```{r imageOne_one,message=FALSE,warning=FALSE,fig.height=4,fig.width=4,units="in"}
 #Load in interior map image data into minCombinR's input_data function
 interior_img <- input_data(file = system.file("extdata", "random_interior_map.tiff", package = "mincombinr"),
                            dataType = "image")
 ```
 
 It's still possible to simply draw a plot that has no metadata
-```{r imageOne_one_b}
+```{r imageOne_one_b,message=FALSE,warning=FALSE,fig.height=4,fig.width=4,units="in"}
 img_chart <- specify_single(chart_type = "image", data = "interior_img")
 plot(img_chart)
 ```
@@ -348,7 +341,7 @@ The error you saw when loading the data is to remind the user that there needs t
 To add metadata, we'll run the special app.  
 Note that in building this markdown file, this block of code is not run, however, **should** be done by the user if they would like to add some metadata.
 
-```{r imageOne_two, eval=FALSE}
+```{r imageOne_two,message=FALSE,warning=FALSE,fig.height=4,fig.width=4,units="in", eval=FALSE}
 
 interior_img <- annotate_image(interior_img)
 
@@ -358,7 +351,7 @@ metadata <- interior_img@data$metadata
 save(file="../inst/extdata/img_meta.rds",metadata)
 ```
 
-```{r imageOne_three}
+```{r imageOne_three,message=FALSE,warning=FALSE,fig.height=4,fig.width=4,units="in"}
 # We'll load an already annotated image to keep things going
 # Normally, the user doesn't do this, but we have to do so because
 # the previous line of code was not run in the markdown notebook
@@ -371,7 +364,7 @@ plot(img_chart)
 ```
 
 Let's do something more interesting and color these regions:
-```{r}
+```{r,message=FALSE,warning=FALSE,fig.height=4,fig.width=4,units="in"}
 # Let's add some arbitrary case counts to the room
 interior_img@data$metadata$counts <- c(100,35)
 
@@ -382,7 +375,7 @@ plot(img_chart)
 
 The other most common type of image is a gel image - this too can now be part of the analysis fun.
 
-```{r}
+```{r,message=FALSE,warning=FALSE,fig.height=4,fig.width=4,units="in"}
 gel_img <- input_data(file = system.file("extdata", "gel_image.tiff", package = "mincombinr"),
                       dataType = "image")
 
@@ -391,7 +384,7 @@ plot(gel_img_chart)
 ```
 
 Just like the interior map, this block of code is not run by the notebook but should be used to annotate an image as a user.
-```{r,eval=FALSE}
+```{r,message=FALSE,warning=FALSE,fig.height=4,fig.width=4,units="in",eval=FALSE}
 
 gel_img <- annotate_image(gel_img)
 metadata <- gel_img@data$metadata
@@ -400,7 +393,7 @@ metadata$element_name <- paste("item", 1:nrow(metadata), sep = "_")
 save(metadata,file="../inst/extdata/gel_img_meta.rds")
 ```
 
-```{r,fig.height= 3,fig.width=5}
+```{r,message=FALSE,warning=FALSE,fig.height=4,fig.width=4,units="in"}
 # Just like the interior map, we will load in an annotated image for the sake of demonstration:
 load(file = system.file("extdata", "gel_img_meta_shipped.rds", package = "mincombinr"))
 gel_img@data$metadata <- metadata

@@ -1,17 +1,17 @@
 ---
 title: "Chart Combinations"
 author: "Anamaria Crisan"
-date: '2019-01-09'
-output: html_document
+output:
+  pdf_document:
+    fig_width: 2
+    fig_height: 2
+    fig_caption: false
 ---
-
 
 This document demonstrates how to combine and plot different chart types using minCombinR. This document assumes that you have already run the "Getting started with minCombinR" and the "Simple Chart Types" and that the necessary data has already been loaded into your R workspace.
 
-Another good option for data that also exists in microreact: https://datadryad.org/bitstream/handle/10255/dryad.111738/ZIKV_with1966_strict_skyline_ctmc.xml?sequence=1
-
 ## Loading data
-```{r,message=FALSE,warning=FALSE}
+```{r,message = FALSE, warning = FALSE, fig.height = 2, fig.width = 2, units = "in"}
 devtools::load_all() # TODO: temporary once things are done
 library(dplyr)
 library(ggtree)
@@ -46,7 +46,7 @@ sle_shape_dat<-input_data(file = system.file("extdata", "sle_admbnda_adm1_1m_gov
 ## Chart Combinations
 
 First, let's store the specifications for a few charts that we want to combine together
-```{r individual_charts,message=FALSE,warning=FALSE}
+```{r, message = FALSE, warning = FALSE, fig.height = 2, fig.width = 2, units = "in"}
 
 # Bar chart
 bar_chart <- specify_single(chart_type = "bar", data = "tab_dat", x = "country")
@@ -64,10 +64,10 @@ scatter_chart <- specify_single(chart_type = "scatter",
 map_chart <- specify_single("geographic map", data = "tab_dat", lat = "latitude", long = "longitude")
 ```
 
-### Many Types General
-Many types general can be used when you just want to put a bunch of plots together and there are no spatial or visual linkages between the plots themselves.
+### Unaligned
+Unaligned combinations can be used when you just want to put a bunch of plots together and there are no spatial or visual linkages between the plots themselves.
 
-```{r many_types_general, message=FALSE, warning=FALSE}
+```{r many_types_general, message = FALSE, warning = FALSE, fig.height = 4, fig.width = 4, units = "in"}
 # Specify that you want to combine the bar_chart, phyloTree_chart and scatter_chart
 mg_combo <- specify_combination(combo_type = "unaligned", 
                                 base_charts = c("bar_chart","phyloTree_chart","scatter_chart"))
@@ -78,7 +78,7 @@ plot(mg_combo)
 ### Small Multiples
 Small multiple charts are visually linked because they show the same underlying chart type while showing different subsets of the data. Another common name for this is facets.
 
-```{r small_multiples,message=FALSE,warning=FALSE}
+```{r small_multiples,message = FALSE, warning = FALSE, fig.height = 4, fig.width = 4, units = "in"}
 # Specify the base chart type with all of the data that you wish to use:
 scatter_chart <- specify_single(chart_type = "scatter", data = "tab_dat", x = "latitude", y = "longitude")
 
@@ -109,7 +109,7 @@ Although there are ways to truly subset them, it's messy and the whole underlyin
 
 In the current implementation of minCombinR, there needs to be some tabular data associated with non-tabular data in order to understand what should be visualized in the first place.
 
-```{r small_multiples_complex,message=FALSE,warning=FALSE}
+```{r small_multiples_complex,message = FALSE, warning = FALSE, fig.height = 4, fig.width = 4, units = "in"}
 # Tree data
 tree_dat <- input_data(file = system.file("extdata", "ebov_tree.nwk", package = "mincombinr"), dataType = "tree")
 
@@ -143,7 +143,7 @@ For the non-tabular data, it's important to have some associated metadata, other
 **First scenario - no metadata provided for the tree**
 
 minCombinR will try to find if there are linkages between the tabular data in one chart and non-tabular data in another chart. If there are EXACT MATCHES, it will link the tabular data to the tree's metadata
-```{r}
+```{r,message = FALSE, warning = FALSE, fig.height = 4, fig.width = 4, units = "in"}
 # Specify the phylogenetic tree and histogram
 phyloTree_chart <- specify_single(chart_type = "phylogenetic tree", data = "tree_dat")
 epicurve <- specify_single(chart_type = "histogram", data = "tab_dat", x = "month")
@@ -158,8 +158,8 @@ plot(color_combo)
 
 ### Spatially Aligned Combinations
 
-*This example will work without any errors*
-```{r composite_no_error,message=FALSE,warning=FALSE}
+Spatially aligned combinations line up charts so that they can be read across horizontally and vertically. Critically, this isn't an abitrary concatenation of charts, but rather, chart are aligned so that the same data are read across.
+```{r composite_no_error,message = FALSE, warning = FALSE, fig.height = 4, fig.width = 4, units = "in"}
 scatter_chart <- specify_single(chart_type = "scatter", data = "tab_dat", x = "month", y = "site_id")
 scatter_chart_two <- specify_single(chart_type = "scatter", data = "tab_dat", x = "country", 
                                   y = "site_id", title = "Cases by country")
@@ -171,12 +171,10 @@ plot(spatial_aligned_combo)
 
 ```
 
-Example without the phylogenetic tree
 
-
-*This example will have an error because pie charts cannot be part of spatial aligned combinations*
+*This example produce an error (and this is the right thing for it to do) because pie charts cannot be part of spatial aligned combinations*
 Pie chart will be automatically removed from the specifications with a warning message to the user
-```{r composite_no_error_two,message=FALSE,warning=FALSE,}
+```{r composite_no_error_two,message = FALSE, warning = FALSE, fig.height = 4, fig.width = 4, units = "in"}
 # Specifications
 pie_chart <- specify_single(chart_type = "pie", data = "tab_dat", x = "country")
 spatial_aligned_combo <- specify_combination(combo_type = "spatial_aligned",
@@ -188,7 +186,7 @@ plot(spatial_aligned_combo)
 ```
 
 Let's try combining a phylogenetic tree, bar chart, and scatter chart
-```{r}
+```{r,message = FALSE, warning = FALSE, fig.height = 4, fig.width = 4, units = "in"}
 # Specifications
 bar_alt <- specify_single(chart_type = "bar", data = "tab_dat", x = "site_id", y = "month", rm_x_label=TRUE)
 
@@ -200,8 +198,8 @@ plot(spatial_aligned_combo)
 
 ```
 
-*It also works when there isn't a tree involved
-```{r}
+It also works when there isn't a tree involved
+```{r,message = FALSE, warning = FALSE, fig.height = 4, fig.width = 4, units = "in"}
 spatial_aligned_combo <- specify_combination(combo_type = "spatial_aligned",
                                        base_charts = c("bar_alt", "scatter_chart", "scatter_chart_two"))
 
@@ -210,7 +208,7 @@ plot(spatial_aligned_combo)
 ```
 
 Here's a combination with a genomic map.
-```{r,fig.width=10}
+```{r,message = FALSE, warning = FALSE, fig.height = 6, fig.width = 6, units = "in"}
 # Genomic chart
 # For illustrative purposes, show fewer positions
 diff_seq <- get_diff_pos(genomic_dat)

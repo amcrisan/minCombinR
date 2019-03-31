@@ -68,7 +68,7 @@ render_phylogenetic_tree <- function(...) {
 
   if(combo_type == "small_multiple"){
     gg_chart<- gg_chart + #adding metadata
-      ggtree::geom_tippoint(aes(colour=show_var,alpha=show_var),size=5) +
+      ggtree::geom_tippoint(aes(colour=show_var,alpha=show_var),size=2) +
       scale_alpha_manual(values=c(1,0))+
       theme(legend.position = "top")
   }
