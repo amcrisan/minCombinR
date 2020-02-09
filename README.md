@@ -41,7 +41,11 @@ For image data, minCombinR uses the [magick](https://cran.r-project.org/web/pack
 As a precaution, please install magick package *ahead of* install minCombinR
 
 ### Basic usage
+Below is an example of how to use minCombinR with some sense of the aspects that are automatically resolved by its algorithms.
 
+![image](https://user-images.githubusercontent.com/5395870/74095249-18895700-4aa3-11ea-9f8e-9b9145712c0e.png)
+
+#### Worked Example
 minCombinR lets you create complex visualizations with a small number of commands. Here's a worked example for some simple charts. This example uses Ebola Data from [microreact](https://microreact.org/project/west-african-ebola-epidemic?tt=rc). 
 
 ```R
